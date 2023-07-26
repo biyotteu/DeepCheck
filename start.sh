@@ -1,0 +1,1 @@
+uvicorn main:app --reload --host=0.0.0.0 --port=3001 --ssl-keyfile=/root/key.pem --ssl-certfile=/root/cert.pem
