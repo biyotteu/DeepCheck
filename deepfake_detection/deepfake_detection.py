@@ -88,7 +88,8 @@ class DeepFakeDetector:
                 face_batch = np.transpose(face_batch, (0, 3, 2, 1))
                 face_batch = face_batch.cuda().float()
                 
-                pred = self.model(face_batch)
+                with torch.no_grad():
+                    pred = self.model(face_batch)
 
                 for p in pred:
                     proba = torch.sigmoid(p).cpu().detach().numpy()
@@ -137,7 +138,8 @@ class DeepFakeDetector:
             face_batch = np.transpose(face_batch, (0, 3, 2, 1))
             face_batch = face_batch.cuda().float()
             
-            pred = self.model(face_batch)
+            with torch.no_grad():
+                pred = self.model(face_batch)
             
             for j in range(len(pred)):
                 result[image_origins[j+i]] = pred[j].item() >= 0.5
