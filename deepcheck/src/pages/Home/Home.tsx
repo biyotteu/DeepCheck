@@ -1,6 +1,6 @@
 import React from "react";
 import "./Home.scss";
-import { Link, Route, Routes } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ReactComponent as Allow } from "../../assets/icons/long_right.svg";
 import Wrap from "../../components/wrap/Wrap";
 function Home() {

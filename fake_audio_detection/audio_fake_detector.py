@@ -16,12 +16,12 @@ class AudioFakeDetector:
 
             if results[0] == 1:
                 return {
-                    "proba": proba[0][1],
-                    "is_fake": True,
+                    "score": proba[0][1],
+                    "isFake": True,
                 }
             else:
                 return {
-                    "proba": proba[0][1],
-                    "is_fake": False,
+                    "score": proba[0][1],
+                    "isFake": False,
                 }
 

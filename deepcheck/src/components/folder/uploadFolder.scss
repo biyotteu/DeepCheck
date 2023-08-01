@@ -1,0 +1,302 @@
+.file {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.info {
+  .title {
+    text-align: center;
+    color: #5362f6;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 120%;
+    margin-bottom: 22px;
+  }
+  .content {
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%;
+    height: fit-content;
+  }
+}
+
+.click {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid #5362f6;
+  gap: 8px;
+  animation: serviceHoverOut 0.5s forwards;
+  width: fit-content;
+  strong {
+    color: #5362f6;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+  }
+}
+
+.click:hover {
+  .button {
+    animation: serviceHoverIn 0.5s forwards;
+  }
+  // .file1,
+  // .file2,
+  // .file3 {
+  //   animation: fileHoverIn 0.5s forwards;
+  // }
+  .file1 {
+    animation: file1Out 0.5s forwards;
+  }
+  .file2 {
+    animation: file2Out 0.5s forwards;
+  }
+  .file3 {
+    animation: file3Out 0.5s forwards;
+  }
+}
+
+.folder {
+  position: relative;
+}
+.file1,
+.file2,
+.file3 {
+  // fill: #e9ebee;
+  // animation: fileHoverOut 0.5s forwards;
+  position: absolute;
+  z-index: -1;
+}
+.file1 {
+  animation: file1In 0.5s forwards;
+}
+.file2 {
+  animation: file2In 0.5s forwards;
+}
+.file3 {
+  animation: file3In 0.5s forwards;
+}
+
+@keyframes serviceHoverIn {
+  0% {
+    background-color: #fff;
+  }
+  100% {
+    background-color: rgba(83, 98, 246, 0.15);
+  }
+}
+
+@keyframes serviceHoverOut {
+  0% {
+    background-color: rgba(83, 98, 246, 0.15);
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+
+@keyframes fileHoverIn {
+  0% {
+    fill: #e9ebee;
+  }
+  100% {
+    fill: rgba(83, 98, 246, 0.3);
+  }
+}
+
+@keyframes fileHoverOut {
+  0% {
+    fill: rgba(83, 98, 246, 0.3);
+  }
+  100% {
+    fill: #e9ebee;
+  }
+}
+
+@keyframes file1Out {
+  0% {
+    fill: #e9ebee;
+    top: -30px;
+    left: -70px;
+  }
+  100% {
+    top: -60px;
+    left: -100px;
+    fill: rgba(83, 98, 246, 0.3);
+  }
+}
+
+@keyframes file1In {
+  0% {
+    top: -60px;
+    left: -100px;
+    fill: rgba(83, 98, 246, 0.3);
+  }
+  100% {
+    top: -30px;
+    left: -70px;
+    fill: #e9ebee;
+  }
+}
+
+@keyframes file2Out {
+  0% {
+    fill: #e9ebee;
+    top: -50px;
+    left: 15px;
+  }
+  100% {
+    top: -80px;
+    left: 15px;
+    fill: rgba(83, 98, 246, 0.3);
+  }
+}
+
+@keyframes file2In {
+  0% {
+    top: -80px;
+    left: 15px;
+    fill: rgba(83, 98, 246, 0.3);
+  }
+  100% {
+    top: -50px;
+    left: 15px;
+    fill: #e9ebee;
+  }
+}
+
+@keyframes file3Out {
+  0% {
+    fill: #e9ebee;
+    top: -30px;
+    right: -80px;
+  }
+  100% {
+    top: -60px;
+    right: -100px;
+    fill: rgba(83, 98, 246, 0.3);
+  }
+}
+
+@keyframes file3In {
+  0% {
+    top: -60px;
+    right: -100px;
+    fill: rgba(83, 98, 246, 0.3);
+  }
+  100% {
+    top: -30px;
+    right: -80px;
+    fill: #e9ebee;
+  }
+}
+
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 33px;
+}
+.loading {
+  display: flex;
+  gap: 9px;
+  background-color: rgba(83, 98, 246, 0.2);
+  width: 108px;
+  height: 108px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+}
+
+.loading-wrap {
+  position: relative;
+  width: 14px;
+  height: 14px;
+}
+
+.loading-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 100%;
+  position: absolute;
+  background-color: rgba(83, 98, 246, 1);
+}
+
+.dot1 {
+  animation: dotMove 1s infinite;
+  // animation: name duration timing-function delay iteration-count direction fill-mode;
+}
+.dot2 {
+  animation: dotMove 1s infinite 0.3s;
+  // animation: name duration timing-function delay iteration-count direction fill-mode;
+}
+.dot3 {
+  animation: dotMove 1s infinite 0.6s;
+  // animation: name duration timing-function delay iteration-count direction fill-mode;
+}
+@keyframes dotMove {
+  0% {
+    top: 0px;
+  }
+  50% {
+    top: -10px;
+  }
+  100% {
+    top: 0px;
+  }
+}
+
+.loading-message {
+  width: 132px;
+}
+.loading-message::after {
+  color: #5362f6;
+  content: "파일 분석중.";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 130%;
+  animation: loadingMessage 1.6s infinite;
+}
+
+@keyframes loadingMessage {
+  0% {
+    content: "파일 분석중.";
+  }
+  50% {
+    content: "파일 분석중..";
+  }
+  75% {
+    content: "파일 분석중...";
+  }
+}
+
+.complete-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 33px;
+  .complete-message {
+    color: #06c755;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+  }
+}

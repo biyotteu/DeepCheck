@@ -1,0 +1,41 @@
+.button {
+  pointer-events: auto !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid #5362f6;
+  gap: 8px;
+  animation: serviceHoverOut 0.5s forwards;
+  width: fit-content;
+  strong {
+    color: #5362f6;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+  }
+}
+
+.button:hover {
+  animation: serviceHoverIn 0.5s forwards;
+}
+
+@keyframes serviceHoverIn {
+  0% {
+    background-color: #fff;
+  }
+  100% {
+    background-color: rgba(83, 98, 246, 0.15);
+  }
+}
+
+@keyframes serviceHoverOut {
+  0% {
+    background-color: rgba(83, 98, 246, 0.15);
+  }
+  100% {
+    background-color: #fff;
+  }
+}

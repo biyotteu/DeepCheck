@@ -48,34 +48,43 @@ class DeepFakeDetector:
         self.face_extractor = FaceExtractor(facedet=facedet)
 
     
-    def detect_image(self, image):
-        if isinstance(image, str):
-            image = Image.open(image)
-        
+    def detect_image(self, folder_id,image_path):
+        # if isinstance(image, str):
+        # out_image_path = image_path.replace("image","faces")
+        out_path = "https://deepcheck.site/tmp/image/"+folder_id+"/"
+        out_image_path = out_path+image_path.split("/")[-1]
+        image = Image.open(image_path).convert('RGB')
         faces = self.face_extractor.process_image(img=image)['faces']
-        print(faces[0].shape)
 
         face_count = len(faces)
         if face_count > 0:
+            face_paths = []
             sum = 0.0
-            TMP = os.path.abspath(__file__).replace("deepfake_detection/deepfake_detection.py","tmp/image/")
-            filename= f"{str(uuid.uuid4())}.jpg"
-            fileUrl = "https://218.149.220.237:3001/tmp/image/faces/"+filename
-            face_filepath = TMP+'faces/'+filename
-            fig,ax = plt.subplots(face_count//4 + 1, 4,figsize=(8,(face_count//4 + 1)*2)) if face_count > 4 else plt.subplots(1, face_count,figsize=(face_count*2,2))
-            fig.subplots_adjust(left=0, bottom=0, right=1, top=1,wspace=0, hspace=0)
-            
-            if face_count > 1:
-                for i in range(face_count):
-                    ax[i].imshow(faces[i])
-                    ax[i].set_axis_off()
-                    ax[i].axis('tight')
-            else:
-                ax.imshow(faces[0])
+            TMP = os.path.abspath(__file__).replace("deepfake_detection/deepfake_detection.py","tmp/image/"+folder_id+"/")
+            print(TMP)
+            face_dir = os.path.join(TMP,'faces')
+            os.mkdir(face_dir)
 
-            plt.axis('tight')
-            plt.axis('off')
-            plt.savefig(face_filepath, bbox_inches='tight')
+            for i in range(face_count):
+                face_id = "face_"+str(i+1)+".jpg"
+                face_paths.append(os.path.join(out_path,os.path.join('faces',face_id)))
+                Image.fromarray(faces[i]).save(os.path.join(face_dir,face_id))
+                
+            # face_filepath = TMP+'faces/'+filename
+            # fig,ax = plt.subplots(face_count//4 + 1, 4,figsize=(8,(face_count//4 + 1)*2)) if face_count > 4 else plt.subplots(1, face_count,figsize=(face_count*2,2))
+            # fig.subplots_adjust(left=0, bottom=0, right=1, top=1,wspace=0, hspace=0)
+            
+            # if face_count > 1:
+            #     for i in range(face_count):
+            #         ax[i].imshow(faces[i])
+            #         ax[i].set_axis_off()
+            #         ax[i].axis('tight')
+            # else:
+            #     ax.imshow(faces[0])
+
+            # plt.axis('tight')
+            # plt.axis('off')
+            # plt.savefig(face_filepath, bbox_inches='tight')
             
             for i in range(face_count):
                 faces[i] = self.transform(image=faces[i])['image']
@@ -96,15 +105,17 @@ class DeepFakeDetector:
                     sum += proba.item()
                     if proba > self.threshold:
                         return {
-                            "file":fileUrl,
-                            "proba" : proba.item(),
-                            "is_fake" : True,
+                            "origin":out_image_path,
+                            "faces":face_paths,
+                            "score" : round(proba.item(),2),
+                            "isFake" : True,
                         }
             
             return {
-                "file":fileUrl,
-                "proba": sum / len(faces),
-                "is_fake": False,
+                "origin":out_image_path,
+                "faces":face_paths,
+                "score": round(sum / len(faces),2),
+                "isFake": False,
             }
 
     def detect_video(self, video):

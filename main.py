@@ -31,6 +31,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.mount("/tmp", StaticFiles(directory="./tmp"), name="tmp")
 
 audioDetector = AudioFakeDetector()
@@ -52,16 +53,19 @@ async def audio(file: UploadFile):
 # cross_efficientnet_vit
 @app.post("/image/")
 async def audio(file: UploadFile):
-    UPLOAD_DIR = "./tmp/image"
+    folder_id = str(uuid.uuid1())
+    UPLOAD_DIR = "./tmp/image/"+folder_id
+    os.mkdir(UPLOAD_DIR)
     content = await file.read()
-    filename = f"{str(uuid.uuid4())}." + file.filename.split(".")[-1]
+    filename = os.path.join(UPLOAD_DIR,"origin."+file.filename.split(".")[-1])
 
-    with open(os.path.join(UPLOAD_DIR, filename), "wb") as fp:
+    with open(filename, "wb") as fp:
         fp.write(content) 
 
-    result = deepfakeDetector.detect_image(os.path.join(UPLOAD_DIR, filename))
-    os.remove(os.path.join(UPLOAD_DIR, filename))
-    return result
+    return deepfakeDetector.detect_image(folder_id,filename)
+    # result = deepfakeDetector.detect_image(os.path.join(UPLOAD_DIR, filename))
+    # os.remove(os.path.join(UPLOAD_DIR, filename))
+    # return result
 
 # icpr2020dfdc
 @app.post("/image2/")
@@ -82,7 +86,7 @@ async def images_from_urls(data:Dict[Any, Any]):
     urls = data["urls"]
     return deepfakeDetector.detect_urls(urls)
 
-@app.get("/test")
+@app.get("/test/")
 async def test():
     print("success")
     return "hello world"

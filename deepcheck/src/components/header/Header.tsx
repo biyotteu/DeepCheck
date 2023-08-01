@@ -13,7 +13,7 @@ function Header() {
             <h1>DeepCheck</h1>
           </Link>
           <div className="menus">
-            <Link to="/" className="menu">
+            <Link to="/deepfake" className="menu">
               Deepfake 탐지
             </Link>
             <Link to="/" className="menu">
