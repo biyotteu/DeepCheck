@@ -4,15 +4,20 @@ import "./uploadFolder.scss";
 import { ReactComponent as Png } from "../../assets/icons/file_png.svg";
 import { ReactComponent as Jpg } from "../../assets/icons/file_jpg.svg";
 import { ReactComponent as Alt } from "../../assets/icons/file_image.svg";
+
+import { ReactComponent as Mp3 } from "../../assets/icons/file_mp3.svg";
+import { ReactComponent as Wav } from "../../assets/icons/file_wav.svg";
+import { ReactComponent as Music } from "../../assets/icons/file_music.svg";
+
 import { ReactComponent as Complete } from "../../assets/icons/complete.svg";
 
-import http from "../../utils/http";
 type UploadFolderProps = {
   title: string;
   content: string;
   onClick: () => void;
   isLoading: boolean;
   isComplete: boolean;
+  isAudio?: boolean;
 };
 function UploadFolder({
   title,
@@ -20,6 +25,7 @@ function UploadFolder({
   onClick,
   isLoading,
   isComplete,
+  isAudio = false,
 }: UploadFolderProps) {
   return (
     <div>
@@ -28,13 +34,21 @@ function UploadFolder({
           <div className="click" onClick={onClick}>
             <div className="folder">
               <img src="/assets/images/folder.svg" alt="folder" />
-              <Png className="file1" />
-              <Alt className="file2" />
-              <Jpg className="file3" />
+              {isAudio ? <Mp3 className="file1" /> : <Png className="file1" />}
+              {isAudio ? (
+                <Music className="file2" />
+              ) : (
+                <Alt className="file2" />
+              )}
+              {isAudio ? <Wav className="file3" /> : <Jpg className="file3" />}
             </div>
             <div className="button">
               <img
-                src="/assets/icons/image_alt.svg"
+                src={
+                  isAudio
+                    ? "/assets/icons/fi-rs-file-music.svg"
+                    : "/assets/icons/image_alt.svg"
+                }
                 alt="image_alt"
                 width={28}
                 height={28}

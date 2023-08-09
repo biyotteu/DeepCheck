@@ -1,5 +1,5 @@
 import React from "react";
-import "./Deepfake.scss";
+import "./Watermark.scss";
 import UploadFolder from "../../components/folder/uploadFolder";
 import http from "../../utils/http";
 import SideConsoleTag from "../../components/SideConsole/tag";
@@ -7,17 +7,17 @@ import SideConsoleScore from "../../components/SideConsole/score";
 import FaceGrid from "../../components/FaceGrid/FaceGrid";
 import Button from "../../components/button/button";
 
-type DeepfakeResponse = {
+type WatermarkResponse = {
   origin: string;
   faces: string[];
   isFake: boolean;
   score: number;
 };
-function Deepfake() {
+function Watermark() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isComplete, setIsComplete] = React.useState(false);
   const fileInput = React.useRef<HTMLInputElement>(null);
-  const [result, setResult] = React.useState<DeepfakeResponse>({
+  const [result, setResult] = React.useState<WatermarkResponse>({
     origin: "",
     faces: [],
     isFake: true,
@@ -39,7 +39,7 @@ function Deepfake() {
         const formData = new FormData();
         formData.append("file", file);
         http
-          .post("/image/", formData, {
+          .post("/watermark/", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
@@ -57,7 +57,7 @@ function Deepfake() {
     }
   };
   return (
-    <div className="deepfake">
+    <div className="watermark">
       <div className={"upload" + (isComplete ? " completeLoading" : "")}>
         <input
           type="file"
@@ -66,9 +66,9 @@ function Deepfake() {
           style={{ display: "none" }}
         />
         <UploadFolder
-          title="Deepfake 탐지"
-          content="딥러닝과 인공지능 기술을 활용하여 오진을 방지하고<br/>
-높은 정확도로 이미지, 음성, 비디오 등 다양한 유형의 딥페이크를 탐지합니다."
+          title="Deepfake 방지"
+          content="AI모델을 통해 딥페이크를 방지할 수 있는<br/>
+          다양한 노이즈를 적용합니다."
           onClick={handleButtonClick}
           isLoading={isLoading}
           isComplete={isComplete}
@@ -92,20 +92,9 @@ function Deepfake() {
         </div>
         <div className="console">
           <SideConsoleTag
-            title={
-              result.isFake
-                ? "Deepfake가 적용된 파일입니다."
-                : "Deepfake가 적용되지 않은 파일입니다."
-            }
-            type="picture"
-            isFake={result.isFake}
-          />
-          <SideConsoleScore
-            title="Deepfake 확률"
-            content="숫자가 높을수록 딥페이크일 확률이 높습니다."
-            score={result?.score || 0}
-            isFake={result.isFake}
-            isComplete={isComplete}
+            title="Deepfake를 방지하기 위한 이미지를 생성하였습니다."
+            type="info"
+            isFake={false}
           />
           <div className="facegrid-wrap">
             <FaceGrid faces={result.faces} />
@@ -126,4 +115,4 @@ function Deepfake() {
   );
 }
 
-export default Deepfake;
+export default Watermark;

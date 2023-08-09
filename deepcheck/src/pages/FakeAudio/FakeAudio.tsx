@@ -1,27 +1,24 @@
 import React from "react";
-import "./Deepfake.scss";
+import "./FakeAudio.scss";
 import UploadFolder from "../../components/folder/uploadFolder";
 import http from "../../utils/http";
 import SideConsoleTag from "../../components/SideConsole/tag";
 import SideConsoleScore from "../../components/SideConsole/score";
-import FaceGrid from "../../components/FaceGrid/FaceGrid";
 import Button from "../../components/button/button";
 
-type DeepfakeResponse = {
-  origin: string;
-  faces: string[];
-  isFake: boolean;
+type FakeAudioResponse = {
   score: number;
+  isFake: boolean;
+  spectrogram: string;
 };
-function Deepfake() {
+function FakeAudio() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isComplete, setIsComplete] = React.useState(false);
   const fileInput = React.useRef<HTMLInputElement>(null);
-  const [result, setResult] = React.useState<DeepfakeResponse>({
-    origin: "",
-    faces: [],
-    isFake: true,
+  const [result, setResult] = React.useState<FakeAudioResponse>({
     score: 0,
+    isFake: false,
+    spectrogram: "",
   });
 
   const handleButtonClick = () => {
@@ -32,14 +29,14 @@ function Deepfake() {
     const files = e.target.files;
     console.log("handle");
     if (files) {
-      const reg = /(.*?)\.(jpg|jpeg|png|gif|bmp|tif|ppm)$/;
+      const reg = /(.*?)\.(mp3|wav|flac|ogg|mat|raw|aifc)$/;
       const file = files[0];
       if (file.name.match(reg)) {
         setIsLoading(true);
         const formData = new FormData();
         formData.append("file", file);
         http
-          .post("/image/", formData, {
+          .post("/audio/", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
@@ -57,7 +54,7 @@ function Deepfake() {
     }
   };
   return (
-    <div className="deepfake">
+    <div className="fake-audio">
       <div className={"upload" + (isComplete ? " completeLoading" : "")}>
         <input
           type="file"
@@ -66,18 +63,23 @@ function Deepfake() {
           style={{ display: "none" }}
         />
         <UploadFolder
-          title="Deepfake 탐지"
-          content="딥러닝과 인공지능 기술을 활용하여 오진을 방지하고<br/>
-높은 정확도로 이미지, 음성, 비디오 등 다양한 유형의 딥페이크를 탐지합니다."
+          title="Fake audio 탐지"
+          content="딥러닝과 인공지능 기술을 활용하여<br/>
+          높은 정확도로 Fake audio를 탐지합니다."
           onClick={handleButtonClick}
           isLoading={isLoading}
           isComplete={isComplete}
+          isAudio={true}
         />
       </div>
       <div className={"result" + (isComplete ? " show-result" : "")}>
         <div className="origin">
           <div className="image-wrap">
-            <img src={result.origin} alt="origin" className="origin-image" />
+            <img
+              src={result.spectrogram}
+              alt="origin"
+              className="origin-image"
+            />
             <img
               src="/assets/images/dotleft.svg"
               alt="dot"
@@ -93,23 +95,19 @@ function Deepfake() {
         <div className="console">
           <SideConsoleTag
             title={
-              result.isFake
-                ? "Deepfake가 적용된 파일입니다."
-                : "Deepfake가 적용되지 않은 파일입니다."
+              result.isFake ? "Fake audio입니다." : "Fake audio가 아닙니다."
             }
-            type="picture"
+            type="audio"
             isFake={result.isFake}
           />
           <SideConsoleScore
-            title="Deepfake 확률"
-            content="숫자가 높을수록 딥페이크일 확률이 높습니다."
+            title="Fake audio 확률"
+            content="숫자가 높을수록 Fake audio일 확률이 높습니다."
             score={result?.score || 0}
             isFake={result.isFake}
             isComplete={isComplete}
           />
-          <div className="facegrid-wrap">
-            <FaceGrid faces={result.faces} />
-          </div>
+          <div style={{ flex: 1 }} />
           <div className="button-wrap">
             <Button
               title="파일 변경"
@@ -126,4 +124,4 @@ function Deepfake() {
   );
 }
 
-export default Deepfake;
+export default FakeAudio;

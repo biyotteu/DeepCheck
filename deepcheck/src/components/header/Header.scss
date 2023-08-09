@@ -32,6 +32,9 @@ header {
     padding: 9px 20px;
     border-radius: 12px;
   }
+  .active {
+    color: #5362f6;
+  }
   .menu:hover {
     // background-color: var(--grey-grey-030, #e9ebee);
     animation: onHoverAnimation 0.5s ease-in-out forwards;

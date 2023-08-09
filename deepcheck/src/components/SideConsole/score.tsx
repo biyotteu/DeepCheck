@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./score.scss";
 import Chart from "react-apexcharts";
 
@@ -21,7 +21,7 @@ function SideConsoleScore({
   console.log(score);
   useEffect(() => {
     if (isComplete) {
-      const animation = setTimeout(() => {
+      setTimeout(() => {
         setStartAnimation(true);
       }, 2000);
     } else {
@@ -48,14 +48,12 @@ function SideConsoleScore({
         clearInterval(animation);
       };
     }
-  }, [startAnimation]);
+  }, [startAnimation, score]);
   return (
     <div className="score-area">
       <div className="text-info">
-        <div className="title">Deepfake 확률</div>
-        <div className="content">
-          숫자가 높을수록 딥페이크일 확률이 높습니다.
-        </div>
+        <div className="title">{title}</div>
+        <div className="content">{content}</div>
       </div>
       <div className="chart-wrap">
         {startAnimation && (

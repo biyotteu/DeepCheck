@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import "./FaceGrid.scss";
 
 function FaceGrid({ faces }: { faces: string[] }) {

@@ -1,9 +1,12 @@
 import React from "react";
 import "./Header.scss";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Wrap from "../wrap/Wrap";
 
 function Header() {
+  const getClass = ({ isActive }: { isActive: boolean }) => {
+    return isActive ? "menu active" : "menu";
+  };
   return (
     <header>
       <Wrap>
@@ -13,15 +16,15 @@ function Header() {
             <h1>DeepCheck</h1>
           </Link>
           <div className="menus">
-            <Link to="/deepfake" className="menu">
+            <NavLink to="/deepfake" className={getClass}>
               Deepfake 탐지
-            </Link>
-            <Link to="/" className="menu">
+            </NavLink>
+            <NavLink to="/preventdeepfake" className={getClass}>
               Deepfake 방지
-            </Link>
-            <Link to="/" className="menu">
+            </NavLink>
+            <NavLink to="/fakeaudio" className={getClass}>
               Fake Audio 탐지
-            </Link>
+            </NavLink>
           </div>
           <div className="user">
             <Link to="/" className="login">
