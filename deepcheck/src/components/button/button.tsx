@@ -11,13 +11,8 @@ function Button({
   onClick?: () => void;
 }) {
   return (
-    <div className="button" onClick={onClick}>
-      <img
-        src="/assets/icons/image_alt.svg"
-        alt="image_alt"
-        width={28}
-        height={28}
-      />
+    <div className="custom-button" onClick={onClick}>
+      <img src="/assets/icons/image_alt.svg" alt="image_alt" />
       <strong>{title}</strong>
     </div>
   );

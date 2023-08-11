@@ -20,7 +20,7 @@ function Deepfake() {
   const [result, setResult] = React.useState<DeepfakeResponse>({
     origin: "",
     faces: [],
-    isFake: true,
+    isFake: false,
     score: 0,
   });
 
@@ -50,6 +50,10 @@ function Deepfake() {
             setIsComplete(true);
           })
           .catch((error) => {
+            const res = error.response;
+            if (res.status === 413) {
+              console.log("too large file");
+            }
             setIsLoading(false);
             console.log(error);
           });

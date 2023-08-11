@@ -33,7 +33,11 @@ function UploadFolder({
         <div className="file">
           <div className="click" onClick={onClick}>
             <div className="folder">
-              <img src="/assets/images/folder.svg" alt="folder" />
+              <img
+                src="/assets/images/folder.svg"
+                alt="folder"
+                className="folder"
+              />
               {isAudio ? <Mp3 className="file1" /> : <Png className="file1" />}
               {isAudio ? (
                 <Music className="file2" />
@@ -50,8 +54,6 @@ function UploadFolder({
                     : "/assets/icons/image_alt.svg"
                 }
                 alt="image_alt"
-                width={28}
-                height={28}
               />
               <strong>파일 추가</strong>
             </div>
@@ -84,7 +86,7 @@ function UploadFolder({
       )}
       {isComplete && (
         <div className="complete-section">
-          <Complete />
+          <Complete className="complete-icon" />
           <div className="complete-message">파일 분석 완료</div>
         </div>
       )}

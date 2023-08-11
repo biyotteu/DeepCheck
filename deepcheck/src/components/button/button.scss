@@ -1,4 +1,4 @@
-.button {
+.custom-button {
   pointer-events: auto !important;
   cursor: pointer;
   display: flex;
@@ -16,9 +16,13 @@
     font-weight: 600;
     line-height: 130%;
   }
+  img {
+    width: 28px;
+    height: 28px;
+  }
 }
 
-.button:hover {
+.custom-button:hover {
   animation: serviceHoverIn 0.5s forwards;
 }
 
@@ -37,5 +41,20 @@
   }
   100% {
     background-color: #fff;
+  }
+}
+
+@media (max-width: 1280px) {
+  .custom-button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    strong {
+      font-size: 14px;
+      line-height: 140%;
+    }
+    img {
+      width: 20px;
+      height: 20px;
+    }
   }
 }

@@ -68,6 +68,24 @@ function SideConsoleScore({
                   easing: "easeout",
                 },
               },
+              responsive: [
+                {
+                  breakpoint: 1280,
+                  options: {
+                    chart: {
+                      width: 150,
+                      height: 150,
+                    },
+                    plotOptions: {
+                      radialBar: {
+                        hollow: {
+                          size: "55%",
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
               plotOptions: {
                 radialBar: {
                   hollow: {

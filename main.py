@@ -1,8 +1,11 @@
-from fastapi  import FastAPI, File, UploadFile
+from fastapi  import FastAPI, File, UploadFile, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from starlette.exceptions import HTTPException
+
 from typing import Dict, Any
 
 import sys
@@ -32,8 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/tmp", StaticFiles(directory="./tmp"), name="tmp")
-
+# models 
 audioDetector = AudioFakeDetector()
 deepfakeDetector = DeepFakeDetector()
 deepfakeDetector2 = DeepFakeDetector2()
@@ -63,9 +65,6 @@ async def audio(file: UploadFile):
         fp.write(content) 
 
     return deepfakeDetector.detect_image(folder_id,filename)
-    # result = deepfakeDetector.detect_image(os.path.join(UPLOAD_DIR, filename))
-    # os.remove(os.path.join(UPLOAD_DIR, filename))
-    # return result
 
 # icpr2020dfdc
 @app.post("/image2/")
@@ -90,3 +89,16 @@ async def images_from_urls(data:Dict[Any, Any]):
 async def test():
     print("success")
     return "hello world"
+
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        try:
+            return await super().get_response(path, scope)
+        except HTTPException as e:
+            if e.status_code == 404:
+                return await super().get_response("index.html", scope)
+            else:
+                raise e
+            
+app.mount("/tmp", StaticFiles(directory="./tmp"), name="tmp")
+app.mount("/", SPAStaticFiles(directory="./deepcheck/build", html=True), name="static")

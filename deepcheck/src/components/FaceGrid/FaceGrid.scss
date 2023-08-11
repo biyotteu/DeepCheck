@@ -1,11 +1,17 @@
-.grid {
+.face-grid {
   display: grid;
   width: 100%;
   grid-template-columns: repeat(4, 1fr);
   gap: 21px;
+  .face-item {
+    width: 100%;
+    border-radius: 8px;
+    aspect-ratio: 1;
+  }
 }
-.face {
-  width: 100%;
-  border-radius: 8px;
-  aspect-ratio: 1;
+
+@media (max-width: 1280px) {
+  .face-grid {
+    gap: 8px;
+  }
 }
