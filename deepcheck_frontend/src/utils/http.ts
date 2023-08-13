@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const http = axios.create({ baseURL: "http://deepcheck.site" });
+const http = axios.create({ baseURL: "https://deepcheck.site/api/" });
 
 // http.interceptors.request.use(
 //   async config => {

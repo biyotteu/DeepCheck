@@ -36,7 +36,7 @@ function FakeAudio() {
         const formData = new FormData();
         formData.append("file", file);
         http
-          .post("/audio/", formData, {
+          .post("/ai/audio/", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
