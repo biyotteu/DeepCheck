@@ -1,0 +1,7 @@
+*.db
+__pycache__/
+versions/
+settings.json
+
+migrations/
+alembic.ini
