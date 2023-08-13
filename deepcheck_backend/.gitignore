@@ -2,3 +2,6 @@
 __pycache__/
 versions/
 settings.json
+
+migrations/
+alembic.ini
