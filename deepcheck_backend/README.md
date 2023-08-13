@@ -1,5 +1,4 @@
-alembic init migrations
-
+alembic init migrations  
 alembic revision --autogenerate  
 alembic upgrade head  
   

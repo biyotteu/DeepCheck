@@ -13,9 +13,9 @@ from domain.ai import ai_schema, ai_crud
 from domain.user.user_router import getCurrentUser
 from models import User
 
-from fake_audio_detection.audio_fake_detector import AudioFakeDetector
-from deepfake_detection.deepfake_detection import DeepFakeDetector
-from icpr2020dfdc.deepfake_detection import DeepFakeDetector as DeepFakeDetector2
+from lib.fake_audio_detection.audio_fake_detector import AudioFakeDetector
+from lib.deepfake_detection.deepfake_detection import DeepFakeDetector
+from lib.icpr2020dfdc.deepfake_detection import DeepFakeDetector as DeepFakeDetector2
 
 from middleware.jwt import verifyJWT
 
@@ -68,8 +68,8 @@ async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
     os.remove(os.path.join(UPLOAD_DIR, filename))
     return result
 
-@router.post("/imagesFromUrls", current_user: User = Depends(getCurrentUser))
-async def images_from_urls(data:Dict[Any, Any]):
+@router.post("/imagesFromUrls")
+async def images_from_urls(data:Dict[Any, Any], current_user: User = Depends(getCurrentUser)):
     urls = data["urls"]
     return deepfakeDetector.detect_urls(urls)
 
