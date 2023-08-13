@@ -10,5 +10,3 @@
 *.tar.gz
 *.pem
 nohup.out
-
-info.log
