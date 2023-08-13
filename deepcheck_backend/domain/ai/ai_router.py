@@ -28,9 +28,9 @@ router = APIRouter(
     prefix="/api/ai",
 )
 
-@router.post("/audio")
-async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
-    UPLOAD_DIR = "./tmp/audio"
+@router.post("/audio/")
+async def audio(file: UploadFile):#, current_user: User = Depends(getCurrentUser)):
+    UPLOAD_DIR = "../tmp/audio"
     content = await file.read()
     filename = f"{str(uuid.uuid4())}." + file.filename.split(".")[-1]
     with open(os.path.join(UPLOAD_DIR, filename), "wb") as fp:
@@ -41,10 +41,10 @@ async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
     return result
 
 # cross_efficientnet_vit
-@router.post("/image")
-async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
+@router.post("/image/")
+async def audio(file: UploadFile):#, current_user: User = Depends(getCurrentUser)):
     folder_id = str(uuid.uuid1())
-    UPLOAD_DIR = "./tmp/image/"+folder_id
+    UPLOAD_DIR = "../tmp/image/"+folder_id
     os.mkdir(UPLOAD_DIR)
     content = await file.read()
     filename = os.path.join(UPLOAD_DIR,"origin."+file.filename.split(".")[-1])
@@ -55,9 +55,9 @@ async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
     return deepfakeDetector.detect_image(folder_id,filename)
 
 # icpr2020dfdc
-@router.post("/image2")
-async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
-    UPLOAD_DIR = "./tmp/image"
+@router.post("/image2/")
+async def audio(file: UploadFile):#, current_user: User = Depends(getCurrentUser)):
+    UPLOAD_DIR = "../tmp/image"
     content = await file.read()
     filename = f"{str(uuid.uuid4())}." + file.filename.split(".")[-1]
 
@@ -68,8 +68,8 @@ async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
     os.remove(os.path.join(UPLOAD_DIR, filename))
     return result
 
-@router.post("/imagesFromUrls")
-async def images_from_urls(data:Dict[Any, Any], current_user: User = Depends(getCurrentUser)):
+@router.post("/imagesFromUrls/")
+async def images_from_urls(data:Dict[Any, Any]):#, current_user: User = Depends(getCurrentUser)):
     urls = data["urls"]
     return deepfakeDetector.detect_urls(urls)
 

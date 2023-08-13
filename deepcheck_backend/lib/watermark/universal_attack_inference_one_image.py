@@ -111,18 +111,15 @@ if __name__ == "__main__":
                 n_dist += 1
             n_samples += 1
         
-        ############# 保存图片做指标评测 #############
-        # 保存原图
         out_file = './demo_results/AttGAN_original.jpg'
         vutils.save_image(
             img_a.cpu(), out_file,
             nrow=1, normalize=True, range=(-1., 1.)
         )
         for j in range(len(samples)-2):
-            # 保存对抗样本生成的图片
             out_file = './demo_results/AttGAN_advgen_{}.jpg'.format(j)
             vutils.save_image(samples[j+2], out_file, nrow=1, normalize=True, range=(-1., 1.))
-            # 保存原图生成的图片
+
             out_file = './demo_results/AttGAN_gen_{}.jpg'.format(j)
             vutils.save_image(noattack_list[j], out_file, nrow=1, normalize=True, range=(-1., 1.))
         

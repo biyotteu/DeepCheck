@@ -25,7 +25,7 @@ router = APIRouter(
 )
 
 
-@router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/create/", status_code=status.HTTP_204_NO_CONTENT)
 def userCreate(user_create: user_schema.UserCreate, db: Session = Depends(getDB)):
     user = user_crud.getExistingUser(db, user_create=user_create)
     if user:
@@ -34,7 +34,7 @@ def userCreate(user_create: user_schema.UserCreate, db: Session = Depends(getDB)
     user_crud.createUser(db=db, user_create=user_create)
 
 
-@router.post("/login", response_model=user_schema.Token)
+@router.post("/login/", response_model=user_schema.Token)
 def loginForAccessToken(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(getDB)):
     # check user and password
     user = user_crud.getUser(db, data.username)
@@ -80,7 +80,7 @@ def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(ge
 
 
 #recommend
-@router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/update/", status_code=status.HTTP_204_NO_CONTENT)
 def userUpdate(user_update: user_schema.UserUpdate, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
     db_user = user_crud.getUser(db, username=current_user.username)
     if not db_user:
@@ -93,7 +93,7 @@ def userUpdate(user_update: user_schema.UserUpdate, db: Session = Depends(getDB)
 
 
 #recommend
-@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete/", status_code=status.HTTP_204_NO_CONTENT)
 def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
     db_user = user_crud.getUser(db, username=current_user.username)
     if not db_user:
