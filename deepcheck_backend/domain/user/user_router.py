@@ -29,11 +29,19 @@ router = APIRouter(
 @router.post("/create/", status_code=status.HTTP_204_NO_CONTENT)
 def userCreate(user_create: user_schema.UserCreate, db: Session = Depends(getDB)):
     user = user_crud.getExistingUser(db, user_create=user_create)
+    isValidatePassword = user_crud.validatePassword(user_create.password1)
+    
+    if user_create.password1 != user_create.password2:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="입력한 비밀번호가 서로 틀립니다.")
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail="이미 존재하는 사용자입니다.")
+    if not isValidatePassword:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="비밀번호는 숫자, 대문자, 소문자, 특수문자를 모두 포함하고 10자 이상이어야 합니다.")
+    
     user_crud.createUser(db=db, user_create=user_create)
-    return JSONResponse(status_code=200, content=dict(msg="Success"))
 
 
 
