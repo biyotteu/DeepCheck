@@ -19,9 +19,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-            
-app.mount("/tmp", StaticFiles(directory="../tmp"), name="tmp")
-app.mount("/", SPAStaticFiles(directory="../deepcheck_frontend/build", html=True), name="static")
 
 app.include_router(user_router.router)
 app.include_router(ai_router.router)
+
+app.mount("/tmp", StaticFiles(directory="../tmp"), name="tmp")
+app.mount("/", SPAStaticFiles(directory="../deepcheck_frontend/build", html=True), name="static")

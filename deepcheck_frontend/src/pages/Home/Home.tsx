@@ -22,9 +22,9 @@ function Home() {
               <br />
               딥러닝과 인공지능 기술을 통해 해결하였습니다.
             </p>
-            <Link to="/" className="service">
+            {/* <Link to="/" className="service">
               서비스 이용하기
-            </Link>
+            </Link> */}
           </div>
           <div className="images">
             <div className="row">
@@ -51,51 +51,53 @@ function Home() {
               alt="dot"
               className="background-dot2"
             />
-            <Link to="/" className="card">
+            <Link to="/deepfake" className="card">
               <img
                 src="/assets/icons/file_find.svg"
                 alt="deepfake 탐지"
                 width={60}
                 height={60}
               />
-              <h3>Deepfake 탐지</h3>
-              <p>
-                딥러닝과 인공지능 기술을 활용하여 오진을 방지하고 높은 정확도로
-                이미지, 음성, 비디오 등 다양한 유형의 딥페이크를 탐지합니다.
-              </p>
+              <div className="card-content">
+                <h3>Deepfake 탐지</h3>
+                <p>
+                  딥러닝과 인공지능 기술을 활용하여 오진을 방지하고 높은
+                  정확도로 이미지, 음성, 비디오 등 다양한 유형의 딥페이크를
+                  탐지합니다.
+                </p>
+              </div>
               <div className="arrow-wrap">
                 <Allow className="arrow" />
               </div>
             </Link>
-            <Link to="/" className="card">
+            <Link to="/preventdeepfake" className="card">
               <img
                 src="/assets/icons/image_alt.svg"
                 alt="deepfake 방지"
                 width={60}
                 height={60}
               />
-              <h3>Deepfake 탐지</h3>
-              <p>
-                Deepfake를 방지하기 위한 모듈을 적용하여 이미지에 워터마크 혹은
-                노이즈를 적용합니다.
-              </p>
+              <div className="card-content">
+                <h3>Deepfake 탐지</h3>
+                <p>
+                  Deepfake를 방지하기 위한 모듈을 적용하여 이미지에 워터마크
+                  혹은 노이즈를 적용합니다.
+                </p>
+              </div>
               <div className="arrow-wrap">
                 <Allow className="arrow" />
               </div>
             </Link>
-            <Link to="/" className="card">
-              <img
-                src="/assets/icons/microphone.svg"
-                alt="fake audio 탐지"
-                width={60}
-                height={60}
-              />
-              <h3>Audio Fake 탐지</h3>
-              <p>
-                딥러닝과 인공지능 기술을 활용하여
-                <br />
-                높은 정확도로 Fake audio를 탐지합니다.
-              </p>
+            <Link to="/fakeaudio" className="card">
+              <img src="/assets/icons/microphone.svg" alt="fake audio 탐지" />
+              <div className="card-content">
+                <h3>Audio Fake 탐지</h3>
+                <p>
+                  딥러닝과 인공지능 기술을 활용하여
+                  <br />
+                  높은 정확도로 Fake audio를 탐지합니다.
+                </p>
+              </div>
               <div className="arrow-wrap">
                 <Allow className="arrow" />
               </div>

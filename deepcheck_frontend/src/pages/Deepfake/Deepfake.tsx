@@ -39,7 +39,7 @@ function Deepfake() {
         const formData = new FormData();
         formData.append("file", file);
         http
-          .post("/image/", formData, {
+          .post("/ai/image/", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },

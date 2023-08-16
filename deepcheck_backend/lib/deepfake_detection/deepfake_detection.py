@@ -60,7 +60,7 @@ class DeepFakeDetector:
         if face_count > 0:
             face_paths = []
             sum = 0.0
-            TMP = os.path.abspath(__file__).replace("deepfake_detection/deepfake_detection.py","tmp/image/"+folder_id+"/")
+            TMP = os.path.abspath(__file__).replace("deepcheck_backend/lib/deepfake_detection/deepfake_detection.py","tmp/image/"+folder_id+"/")
             print(TMP)
             face_dir = os.path.join(TMP,'faces')
             os.mkdir(face_dir)
