@@ -4,8 +4,38 @@ import { Link, NavLink } from "react-router-dom";
 import Wrap from "../wrap/Wrap";
 import { slide as Menu } from "react-burger-menu";
 import http from "../../utils/http";
+import { ToastContainer, toast } from "react-toastify";
 
 function Header() {
+  const emailRegEx =
+    /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
+  const passwordRegEx = /^[A-Za-z0-9]{8,20}$/;
+
+  const emailCheck = (email: string) => {
+    if (emailRegEx.test(email)) {
+      return true;
+    } else {
+      toast.error("이메일 형식을 확인해주세요", { containerId: "login" });
+      return false;
+    }
+  };
+  const passwordCheck = (password: string) => {
+    if (password.match(passwordRegEx) === null) {
+      toast.error("비밀번호 형식을 확인해주세요", { containerId: "login" });
+      return false;
+    } else {
+      return true;
+    }
+  };
+  const passwordDoubleCheck = (password: string, passwordChk: string) => {
+    if (password !== passwordChk) {
+      toast.error("비밀번호가 다릅니다.", { containerId: "login" });
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   const [menuOpen, setMenuOpen] = React.useState(false);
   const closeAllMenusOnEsc = (e: any) => {
     setMenuOpen(false);
@@ -103,34 +133,56 @@ function Header() {
               )}
               <div className="button-wrap">
                 <button
-                  onClick={async () => {
-                    try {
+                  onClick={
+                    async () => {
+                      if (!emailCheck(user.email)) return;
                       if (login) {
-                        const { data } = await http.post("/user/login", {
-                          email: user.email,
-                          password: user.password,
-                        });
-                        console.log(data);
+                        try {
+                          const { data } = await http.post("/user/login", {
+                            email: user.email,
+                            password: user.password,
+                          });
+                          toast("로그인 성공!");
+                          console.log(data);
+                          setOverlay(false);
+                        } catch (err) {
+                          console.log(err);
+                        }
                       } else {
-                        const { data } = await http.post("/user/create", {
-                          email: user.email,
-                          password: user.password,
-                          passwordCheck: user.passwordCheck,
-                        });
-                        console.log(data);
+                        if (
+                          !passwordCheck(user.password) &&
+                          !passwordDoubleCheck(
+                            user.password,
+                            user.passwordCheck
+                          )
+                        )
+                          return;
+                        try {
+                          const { data } = await http.post("/user/create", {
+                            email: user.email,
+                            password1: user.password,
+                            password2: user.passwordCheck,
+                          });
+
+                          setOverlay(false);
+                          toast("회원가입 성공!\n로그인 해주세요!");
+                          console.log(data);
+                        } catch (err) {}
                       }
-                      setOverlay(false);
-                    } catch (err) {
-                      console.log(err);
                     }
 
                     // setOverlay(false);
-                  }}
+                  }
                 >
                   {login ? "로그인" : "회원가입"}
                 </button>
               </div>
             </div>
+            <ToastContainer
+              enableMultiContainer
+              containerId={"login"}
+              position={toast.POSITION.BOTTOM_RIGHT}
+            />
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from starlette import status
+from starlette.responses import JSONResponse
 
 from database import getDB
 from domain.user import user_crud, user_schema
@@ -32,6 +33,8 @@ def userCreate(user_create: user_schema.UserCreate, db: Session = Depends(getDB)
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail="이미 존재하는 사용자입니다.")
     user_crud.createUser(db=db, user_create=user_create)
+    return JSONResponse(status_code=200, content=dict(msg="Success"))
+
 
 
 @router.post("/login/", response_model=user_schema.Token)
