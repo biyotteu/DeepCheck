@@ -2,9 +2,22 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from domain.user.user_schema import UserCreate, UserUpdate
 from models import User
+import re
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+def validatePassword(password : str) -> bool:
+    if len(password) < 10:
+        return False
+    if not re.search(r"\d", password):
+        return False
+    if not re.search(r"[a-z]", password):
+        return False
+    if not re.search(r"[A-Z]", password):
+        return False
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return False
+    return True
 
 def createUser(db: Session, user_create: UserCreate):
     db_user = User(email=user_create.email,
