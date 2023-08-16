@@ -2,6 +2,133 @@ header {
   border-bottom: 1px solid var(--grey-grey-030, #e9ebee);
 }
 
+.overlay {
+  overflow-y: scroll;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 75%;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 24px;
+    background-color: #fff;
+    min-height: 693px;
+    .card-header {
+      width: 100%;
+      border-bottom: 2px solid #e9ebee;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      position: relative;
+      // margin-bottom: 50px;
+      a {
+        width: 139px;
+        height: 80px;
+        box-sizing: border-box;
+        color: #c5c8ce;
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 130%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-bottom: 4px solid #fff;
+        padding-top: 4px;
+        z-index: 100001;
+      }
+      .active {
+        border-bottom: 4px solid #5362f6;
+        color: #5362f6;
+      }
+      .close-wrap {
+        position: absolute;
+        display: flex;
+        width: 100%;
+        justify-content: flex-end;
+        height: 100%;
+        align-items: center;
+        // z-index: -1;
+        img {
+          width: 40px;
+          height: 40px;
+          margin-right: 20px;
+        }
+        img:hover {
+          background-color: rgba(0, 0, 0, 0.1);
+          border-radius: 30%;
+        }
+      }
+    }
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      padding: 50px 0px;
+      flex: 1;
+      width: 90%;
+      max-width: 400px;
+
+      .title {
+        color: #16191c;
+        /* Title-sm */
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 130%;
+        margin-bottom: 17px;
+        width: 100%;
+      }
+      input {
+        width: 100%;
+        padding: 15px 12px;
+        border-radius: 8px;
+        border: 1px solid #c5c8ce;
+        color: #16191c;
+        // color: var(--grey-grey-040, #c5c8ce);
+        /* Text-md */
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 140%;
+        margin-bottom: 36px;
+        box-sizing: border-box;
+      }
+      .button-wrap {
+        flex: 1;
+        width: 100%;
+        display: flex;
+        align-items: flex-end;
+        button {
+          // display: flex;
+          width: 100%;
+          box-sizing: border-box;
+          border-radius: 12px;
+          background: #5362f6;
+          border: none;
+          // height: 52px;
+          padding: 16px 20px;
+          color: #fff;
+          font-size: 18px;
+          font-weight: 600;
+          line-height: 140%;
+        }
+        button:hover {
+          background-color: #4025e5;
+        }
+      }
+      // box-sizing: border-box;
+      // border: 1px solid #C5C8CE;
+    }
+  }
+}
 .content {
   display: flex;
   justify-content: space-between;
@@ -90,6 +217,45 @@ header {
 }
 
 @media (max-width: 1280px) {
+  .overlay {
+    .card {
+      height: 80%;
+      border-radius: 16px;
+      min-height: 540px;
+      .card-header {
+        width: 100%;
+        border-bottom: 1px solid #e9ebee;
+        gap: 16px;
+        a {
+          width: 77px;
+          height: 44px;
+          font-size: 14px;
+          border-bottom: 3px solid #fff;
+          padding-top: 3px;
+        }
+        .close-wrap {
+          img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+          }
+          img:hover {
+            border-radius: 30%;
+          }
+        }
+      }
+      .card-content {
+        padding: 30px 0px;
+        .title {
+          font-size: 14px;
+          margin-bottom: 16px;
+        }
+        input {
+          font-size: 14px;
+        }
+      }
+    }
+  }
   header {
     background-color: #fff;
     z-index: 1000;

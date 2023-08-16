@@ -37,17 +37,17 @@ def userCreate(user_create: user_schema.UserCreate, db: Session = Depends(getDB)
 @router.post("/login/", response_model=user_schema.Token)
 def loginForAccessToken(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(getDB)):
     # check user and password
-    user = user_crud.getUser(db, data.username)
+    user = user_crud.getUser(db, data.email)
     if not user or not pwd_context.verify(data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
     # make access token
     data = {
-        "username": user.username,
+        "email": user.email,
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     }
     access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
@@ -55,7 +55,7 @@ def loginForAccessToken(data: OAuth2PasswordRequestForm = Depends(), db: Session
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "username": user.username
+        "email": user.email
     }
 
 
@@ -67,13 +67,13 @@ def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(ge
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("username")
-        if username is None:
+        email: str = payload.get("email")
+        if email is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
     else:
-        user = user_crud.getUser(db, username=username)
+        user = user_crud.getUser(db, email=email)
         if user is None:
             raise credentials_exception
         return user
@@ -82,7 +82,7 @@ def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(ge
 #recommend
 @router.put("/update/", status_code=status.HTTP_204_NO_CONTENT)
 def userUpdate(user_update: user_schema.UserUpdate, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
-    db_user = user_crud.getUser(db, username=current_user.username)
+    db_user = user_crud.getUser(db, email=current_user.email)
     if not db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="데이터를 찾을수 없습니다.")
@@ -95,7 +95,7 @@ def userUpdate(user_update: user_schema.UserUpdate, db: Session = Depends(getDB)
 #recommend
 @router.delete("/delete/", status_code=status.HTTP_204_NO_CONTENT)
 def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
-    db_user = user_crud.getUser(db, username=current_user.username)
+    db_user = user_crud.getUser(db, email=current_user.email)
     if not db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="데이터를 찾을수 없습니다.")

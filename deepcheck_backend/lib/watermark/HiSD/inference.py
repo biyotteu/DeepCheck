@@ -24,10 +24,10 @@ from attacks import LinfPGDAttack
 
 def prepare_HiSD():
     device = 'cuda:0' 
-    config = get_config('HiSD/configs/celeba-hq_256.yaml')
+    config = get_config('./lib/watermark/HiSD/configs/celeba-hq_256.yaml')
     noise_dim = config['noise_dim']
     image_size = config['new_size']
-    checkpoint = 'HiSD/gen_00600000.pt'
+    checkpoint = './lib/watermark/HiSD/gen_00600000.pt'
     trainer = HiSD_Trainer(config)
     state_dict = torch.load(checkpoint)
     trainer.models.gen.load_state_dict(state_dict['gen_test'])
@@ -42,7 +42,7 @@ def prepare_HiSD():
     transform = transforms.Compose([transforms.Resize(image_size),
                                     transforms.ToTensor(),
                                     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-    reference = 'HiSD/examples/reference_glasses_2.jpg'
+    reference = './lib/watermark/HiSD/examples/reference_glasses_2.jpg'
     reference = transform(Image.open(reference).convert('RGB')).unsqueeze(0).to(device)
     return transform, F, T, G, E, reference, trainer.models.gen
 

@@ -37,13 +37,13 @@ class ObjDict(dict):
         self[name]=value
 
 def parse(args=None):
-    with open(join('./setting.json'), 'r') as f:
+    with open(join('./lib/watermark/setting.json'), 'r') as f:
         args_attack = json.load(f, object_hook=lambda d: argparse.Namespace(**d))
     return args_attack
 
 # init AttGAN
 def init_attGAN(args_attack):
-    with open(join('./AttGAN/output', args_attack.AttGAN.attgan_experiment_name, 'setting.txt'), 'r') as f:
+    with open(join('./lib/watermark/AttGAN/output', args_attack.AttGAN.attgan_experiment_name, 'setting.txt'), 'r') as f:
         args = json.load(f, object_hook=lambda d: argparse.Namespace(**d))
 
     args.test_int = args_attack.AttGAN.attgan_test_int
@@ -54,7 +54,7 @@ def init_attGAN(args_attack):
     args.n_attrs = len(args.attrs)
     args.betas = (args.beta1, args.beta2)
     attgan = AttGAN(args)
-    attgan.load(find_model(join('./AttGAN/output', args.experiment_name, 'checkpoint'), args.load_epoch))
+    attgan.load(find_model(join('./lib/watermark/AttGAN/output', args.experiment_name, 'checkpoint'), args.load_epoch))
     attgan.eval()
     return attgan, args
 

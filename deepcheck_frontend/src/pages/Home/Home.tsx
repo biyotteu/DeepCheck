@@ -51,7 +51,7 @@ function Home() {
               alt="dot"
               className="background-dot2"
             />
-            <Link to="/" className="card">
+            <Link to="/deepfake" className="card">
               <img
                 src="/assets/icons/file_find.svg"
                 alt="deepfake 탐지"
@@ -70,7 +70,7 @@ function Home() {
                 <Allow className="arrow" />
               </div>
             </Link>
-            <Link to="/" className="card">
+            <Link to="/preventdeepfake" className="card">
               <img
                 src="/assets/icons/image_alt.svg"
                 alt="deepfake 방지"
@@ -88,7 +88,7 @@ function Home() {
                 <Allow className="arrow" />
               </div>
             </Link>
-            <Link to="/" className="card">
+            <Link to="/fakeaudio" className="card">
               <img src="/assets/icons/microphone.svg" alt="fake audio 탐지" />
               <div className="card-content">
                 <h3>Audio Fake 탐지</h3>

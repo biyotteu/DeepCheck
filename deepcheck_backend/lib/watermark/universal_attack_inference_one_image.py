@@ -69,8 +69,8 @@ if __name__ == "__main__":
     print("finished init the attacked models")
 
     tf = transforms.Compose([
-            # transforms.CenterCrop(170),
             transforms.Resize(args_attack.global_settings.img_size),
+            transforms.CenterCrop(args_attack.global_settings.img_size),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])

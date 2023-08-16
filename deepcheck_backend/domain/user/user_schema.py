@@ -2,12 +2,12 @@ from pydantic import BaseModel, validator, EmailStr
 
 
 class UserCreate(BaseModel):
-    username: str
+    # username: str
+    email: EmailStr
     password1: str
     password2: str
-    email: EmailStr
 
-    @validator('username', 'password1', 'password2', 'email')
+    @validator('email','password1', 'password2')
     def not_empty(cls, v):
         if not v or not v.strip():
             raise ValueError('빈 값은 허용되지 않습니다.')
