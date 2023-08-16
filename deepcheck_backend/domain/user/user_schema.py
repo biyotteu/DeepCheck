@@ -38,3 +38,7 @@ class UserUpdate(BaseModel):
             raise ValueError('비밀번호가 일치하지 않습니다')
         return v
 
+
+class Auth(BaseModel):
+    email: EmailStr
+    password: str
