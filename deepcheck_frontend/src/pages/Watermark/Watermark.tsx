@@ -7,22 +7,45 @@ import SideConsoleScore from "../../components/SideConsole/score";
 import FaceGrid from "../../components/FaceGrid/FaceGrid";
 import Button from "../../components/button/button";
 import { toast } from "react-toastify";
+import { saveAs } from "file-saver";
 
+type Gan = {
+  origin: string;
+  AttGAN: {
+    gen: string;
+    advgen: string;
+  };
+  StarGAN: {
+    gen: string;
+    advgen: string;
+  };
+  AttentionGAN: {
+    gen: string;
+    advgen: string;
+  };
+  HiSD: {
+    gen: string;
+    advgen: string;
+  };
+};
 type WatermarkResponse = {
   origin: string;
-  faces: string[];
-  isFake: boolean;
-  score: number;
+  watermark: string;
+  faces: Gan[];
 };
+type GanType = "AttGAN" | "StarGAN" | "AttentionGAN" | "HiSD";
 function Watermark() {
+  const ganKey: GanType[] = ["AttGAN", "StarGAN", "AttentionGAN", "HiSD"];
+  const [faceIdx, setFaceIdx] = React.useState(0);
+  const [ganIdx, setGanIdx] = React.useState(0);
+
   const [isLoading, setIsLoading] = React.useState(false);
   const [isComplete, setIsComplete] = React.useState(false);
   const fileInput = React.useRef<HTMLInputElement>(null);
   const [result, setResult] = React.useState<WatermarkResponse>({
     origin: "",
+    watermark: "",
     faces: [],
-    isFake: true,
-    score: 0,
   });
 
   const handleButtonClick = () => {
@@ -40,12 +63,13 @@ function Watermark() {
         const formData = new FormData();
         formData.append("file", file);
         http
-          .post("/watermark/", formData, {
+          .post("/ai/watermark/", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
           })
           .then((response) => {
+            console.log(response.data);
             setResult(response.data);
             setIsLoading(false);
             setIsComplete(true);
@@ -68,6 +92,12 @@ function Watermark() {
       }
     }
   };
+  const download = () => {
+    if (!result.watermark) {
+      return;
+    }
+    saveAs(result.watermark, "watermark.jpg");
+  };
   return (
     <div className="watermark">
       <div className={"upload" + (isComplete ? " completeLoading" : "")}>
@@ -89,7 +119,64 @@ function Watermark() {
       <div className={"result" + (isComplete ? " show-result" : "")}>
         <div className="origin">
           <div className="image-wrap">
-            <img src={result.origin} alt="origin" className="origin-image" />
+            <div className="image-view">
+              {isComplete && result.faces.length > 0 && (
+                <div className="origin-image">
+                  <div className="gen-image">
+                    <img
+                      src={result.faces[faceIdx][ganKey[ganIdx]].gen}
+                      alt="gen"
+                    />
+                    <div className="notice">
+                      Deepfake 방지 노이즈를 입히지 않은 경우
+                    </div>
+                  </div>
+                  <div className="gen-image">
+                    <img
+                      src={result.faces[faceIdx][ganKey[ganIdx]].advgen}
+                      alt="advgen"
+                    />
+                    <div className="notice">
+                      Deepfake 방지 노이즈를 입힌 경우
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="gen-menu">
+                <div
+                  className={"gen-item " + (ganIdx === 0 ? "active" : "")}
+                  onClick={() => {
+                    setGanIdx(0);
+                  }}
+                >
+                  모델 A
+                </div>
+                <div
+                  className={"gen-item " + (ganIdx === 1 ? "active" : "")}
+                  onClick={() => {
+                    setGanIdx(1);
+                  }}
+                >
+                  모델 B
+                </div>
+                <div
+                  className={"gen-item " + (ganIdx === 2 ? "active" : "")}
+                  onClick={() => {
+                    setGanIdx(2);
+                  }}
+                >
+                  모델 C
+                </div>
+                <div
+                  className={"gen-item " + (ganIdx === 3 ? "active" : "")}
+                  onClick={() => {
+                    setGanIdx(3);
+                  }}
+                >
+                  모델 D
+                </div>
+              </div>
+            </div>
             <img
               src="/assets/images/dotleft.svg"
               alt="dot"
@@ -108,10 +195,32 @@ function Watermark() {
             type="info"
             isFake={false}
           />
-          <div className="facegrid-wrap">
-            <FaceGrid faces={result.faces} />
+          <div className="face-section">
+            <img src={result.watermark} className="watermark-image" />
+            <div className="facegrid-wrap">
+              {result.faces.map((face, idx) => {
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setFaceIdx(idx);
+                    }}
+                    className={
+                      faceIdx === idx ? "grid-item active" : "grid-item"
+                    }
+                  >
+                    <img src={face.origin} alt="face_origin" />
+                    {faceIdx === idx && <div className="face-overlay" />}
+                  </div>
+                );
+              })}
+            </div>
           </div>
           <div className="button-wrap">
+            <button className="download" onClick={download}>
+              <img src="/assets/icons/fi-rr-download.svg" />
+              다운로드
+            </button>
             <Button
               title="파일 변경"
               type="image"

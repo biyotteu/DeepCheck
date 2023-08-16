@@ -14,6 +14,7 @@
     font-style: normal;
     font-weight: 600;
     line-height: 130%;
+    // word-break: keep-all;
   }
   .icon-wrap {
     display: flex;
@@ -56,6 +57,7 @@
 .info {
   .title {
     color: rgba(83, 98, 246, 1);
+    font-size: 22px !important;
   }
   .icon-wrap {
     box-sizing: border-box;
