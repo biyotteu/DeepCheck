@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+from typing_extensions import Annotated
 
 from fastapi import APIRouter, HTTPException
 from fastapi import Depends
@@ -14,8 +15,10 @@ from domain.user.user_crud import pwd_context
 from models import User
 
 from lib.jsonparser import getJsonValue
-from middleware.jwt import verifyJWT
+# from middleware.jwt import verifyJWT
 
+# test for expired (after 1 minute jwt expired)
+# ACCESS_TOKEN_EXPIRE_MINUTES = 1
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 SECRET_KEY = getJsonValue("SECRET")
 ALGORITHM = "HS256"
@@ -24,6 +27,41 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 router = APIRouter(
     prefix="/api/user",
 )
+
+
+def authForm(email: str = "user@example.com", password: str = "string"):
+    return {
+        "email": email, 
+        "password": password
+    }
+
+
+def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(getDB)):
+    invalid_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    expired_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Expired Token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("email")
+        expired: bool = datetime.utcnow() > datetime.utcfromtimestamp(int(payload.get("exp")))
+        if email is None:
+            raise invalid_exception
+        if expired:
+            raise expired_exception
+    except JWTError:
+        raise invalid_exception
+    else:
+        user = user_crud.getUser(db, email=email)
+        if user is None:
+            raise invalid_exception
+        return user
 
 
 @router.post("/create/", status_code=status.HTTP_204_NO_CONTENT)
@@ -42,14 +80,16 @@ def userCreate(user_create: user_schema.UserCreate, db: Session = Depends(getDB)
                             detail="비밀번호는 숫자, 대문자, 소문자, 특수문자를 모두 포함하고 10자 이상이어야 합니다.")
     
     user_crud.createUser(db=db, user_create=user_create)
-
+    return JSONResponse(status_code=200, content={
+        "msg": "Success"
+    })
 
 
 @router.post("/login/", response_model=user_schema.Token)
-def loginForAccessToken(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(getDB)):
+def loginForAccessToken(data: dict = Depends(authForm), db: Session = Depends(getDB)):
     # check user and password
-    user = user_crud.getUser(db, data.email)
-    if not user or not pwd_context.verify(data.password, user.password):
+    user = user_crud.getUser(db, data['email'])
+    if not user or not pwd_context.verify(data['password'], user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -62,32 +102,12 @@ def loginForAccessToken(data: OAuth2PasswordRequestForm = Depends(), db: Session
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     }
     access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
-
-    return {
+    return JSONResponse(status_code=200, content={
+        "msg": "Success",
         "access_token": access_token,
         "token_type": "bearer",
         "email": user.email
-    }
-
-
-def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(getDB)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("email")
-        if email is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    else:
-        user = user_crud.getUser(db, email=email)
-        if user is None:
-            raise credentials_exception
-        return user
+    })
 
 
 #recommend
@@ -101,6 +121,9 @@ def userUpdate(user_update: user_schema.UserUpdate, db: Session = Depends(getDB)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="수정 권한이 없습니다.")
     user_crud.updateUser(db=db, db_user=db_user, user_update=user_update)
+    return JSONResponse(status_code=200, content={
+        'msg': 'Success'
+    })
 
 
 #recommend
@@ -114,6 +137,9 @@ def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCur
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="삭제 권한이 없습니다.")
     user_crud.deleteUser(db=db, db_user=db_user)
+    return JSONResponse(status_code=200, content={
+        'msg': 'Success'
+    })
 
 
 # @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
