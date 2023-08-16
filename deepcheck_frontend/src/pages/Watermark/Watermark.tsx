@@ -6,6 +6,7 @@ import SideConsoleTag from "../../components/SideConsole/tag";
 import SideConsoleScore from "../../components/SideConsole/score";
 import FaceGrid from "../../components/FaceGrid/FaceGrid";
 import Button from "../../components/button/button";
+import { toast } from "react-toastify";
 
 type WatermarkResponse = {
   origin: string;
@@ -50,6 +51,17 @@ function Watermark() {
             setIsComplete(true);
           })
           .catch((error) => {
+            const res = error.response;
+            if (res.status === 413) {
+              console.log("too large file");
+              toast.error("파일이 너무 큽니다!", {
+                position: toast.POSITION.BOTTOM_CENTER,
+              });
+            } else {
+              toast.error("오류가 발생했습니다.", {
+                position: toast.POSITION.BOTTOM_CENTER,
+              });
+            }
             setIsLoading(false);
             console.log(error);
           });

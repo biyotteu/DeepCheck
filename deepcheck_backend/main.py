@@ -6,7 +6,10 @@ from lib.static import SPAStaticFiles
 from domain.user import user_router
 from domain.ai import ai_router
 
-app = FastAPI()
+app = FastAPI(
+    #docs_url=None, # Disable docs (Swagger UI)
+    #redoc_url=None, 
+)
 
 origins = [
     "*",
