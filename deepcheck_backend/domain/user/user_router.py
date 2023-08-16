@@ -20,6 +20,7 @@ from lib.jsonparser import getJsonValue
 # test for expired (after 1 minute jwt expired)
 # ACCESS_TOKEN_EXPIRE_MINUTES = 1
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
+REFRESH_TOKEN_EXPIRE_DAYS = 7 
 SECRET_KEY = getJsonValue("SECRET")
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
@@ -27,6 +28,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 router = APIRouter(
     prefix="/api/user",
 )
+
+
+def makeToken(data):
+    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def authForm(email: str = "user@example.com", password: str = "string"):
@@ -68,10 +73,6 @@ def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(ge
 def userCreate(user_create: user_schema.UserCreate, db: Session = Depends(getDB)):
     user = user_crud.getExistingUser(db, user_create=user_create)
     isValidatePassword = user_crud.validatePassword(user_create.password1)
-    
-    if user_create.password1 != user_create.password2:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="입력한 비밀번호가 서로 틀립니다.")
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail="이미 존재하는 사용자입니다.")
@@ -97,14 +98,25 @@ def loginForAccessToken(data: dict = Depends(authForm), db: Session = Depends(ge
         )
 
     # make access token
-    data = {
+    access_data = {
         "email": user.email,
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     }
-    access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+
+    refresh_data = {
+        "sub": user.email,
+        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    }
+
+    access_token = makeToken(access_data)
+    refresh_token = makeToken(refresh_data)
+
+    user_crud.setRefreshToken(db, user, refresh_token)
+
     return JSONResponse(status_code=200, content={
         "msg": "Success",
         "access_token": access_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer",
         "email": user.email
     })
@@ -140,6 +152,36 @@ def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCur
     return JSONResponse(status_code=200, content={
         'msg': 'Success'
     })
+
+
+@router.get('/token/', status_code=status.HTTP_204_NO_CONTENT)
+def verifiyToken(db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser), token: str = Depends(oauth2_scheme)):
+    
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        exp = payload.get("exp")
+        if exp is None or exp < datetime.utcnow():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="refresh token expired")
+    except JWTError:
+        raise credentials_exception
+    else:
+        access_data = {
+            "email": current_user.email,
+            "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        }
+        access_token = makeToken(access_data)
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
 
 
 # @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
