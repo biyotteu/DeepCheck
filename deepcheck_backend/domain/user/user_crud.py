@@ -46,3 +46,9 @@ def deleteUser(db: Session, db_user: User):
     db.delete(db_user)
     db.commit()
 
+
+def setRefreshToken(db: Session, db_user: User, refresh_token: str):
+    db_user.refresh_token = refresh_token  # 리프레시 토큰 저장
+    db.add(db_user)
+    db.commit()
+
