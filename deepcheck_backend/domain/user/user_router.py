@@ -38,7 +38,7 @@ def authForm(email: str = "user@example.com", password: str = "string"):
 
 def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(getDB)):
     invalid_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
+        status_code=status.HTTP_400_BAD_REQUEST,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
