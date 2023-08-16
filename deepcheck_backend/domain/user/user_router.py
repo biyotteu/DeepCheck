@@ -29,16 +29,13 @@ router = APIRouter(
     prefix="/api/user",
 )
 
+headers = {
+    "Set-Cookie": "path=/; HttpOnly; secure"
+}
+
 
 def makeToken(data):
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
-
-
-def authForm(email: str = "user@example.com", password: str = "string"):
-    return {
-        "email": email, 
-        "password": password
-    }
 
 
 def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(getDB)):
@@ -87,10 +84,10 @@ def userCreate(user_create: user_schema.UserCreate, db: Session = Depends(getDB)
 
 
 @router.post("/login/", response_model=user_schema.Token)
-def loginForAccessToken(data: dict = Depends(authForm), db: Session = Depends(getDB)):
+def loginForAccessToken(data: user_schema.Auth, db: Session = Depends(getDB)):
     # check user and password
-    user = user_crud.getUser(db, data['email'])
-    if not user or not pwd_context.verify(data['password'], user.password):
+    user = user_crud.getUser(db, data.email)
+    if not user or not pwd_context.verify(data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -113,7 +110,7 @@ def loginForAccessToken(data: dict = Depends(authForm), db: Session = Depends(ge
 
     user_crud.setRefreshToken(db, user, refresh_token)
 
-    return JSONResponse(status_code=200, content={
+    return JSONResponse(status_code=200, headers=headers, content={
         "msg": "Success",
         "access_token": access_token,
         "refresh_token": refresh_token,
@@ -133,7 +130,7 @@ def userUpdate(user_update: user_schema.UserUpdate, db: Session = Depends(getDB)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="수정 권한이 없습니다.")
     user_crud.updateUser(db=db, db_user=db_user, user_update=user_update)
-    return JSONResponse(status_code=200, content={
+    return JSONResponse(status_code=200, headers=headers, content={
         'msg': 'Success'
     })
 
@@ -149,7 +146,7 @@ def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCur
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="삭제 권한이 없습니다.")
     user_crud.deleteUser(db=db, db_user=db_user)
-    return JSONResponse(status_code=200, content={
+    return JSONResponse(status_code=200, headers=headers, content={
         'msg': 'Success'
     })
 
@@ -178,10 +175,11 @@ def verifiyToken(db: Session = Depends(getDB), current_user: User = Depends(getC
         }
         access_token = makeToken(access_data)
 
-    return {
+    return JSONResponse(status_code=200, headers=headers, content={
+        "msg": "Success",
         "access_token": access_token,
         "token_type": "bearer",
-    }
+    })
 
 
 # @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
