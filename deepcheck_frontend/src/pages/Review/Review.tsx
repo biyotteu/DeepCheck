@@ -125,9 +125,17 @@ function Review() {
                   gender: survey[0] == "1" ? "M" : "F",
                   age: Number(survey[1]),
                   rage: Number(survey[2]),
-                  satisfied,
-                  unsatisfied,
-                  unsatisfiedReason,
+                  deepfake_detect: survey[3][0] ? 1 : 0,
+                  deepfake_protect: survey[3][1] ? 1 : 0,
+                  fakeaudio_detect: survey[3][2] ? 1 : 0,
+                  service_sec_1: survey[4][0] ? 1 : 0,
+                  design_1: survey[4][1] ? 1 : 0,
+                  service_function_1: survey[4][2] ? 1 : 0,
+                  information_1: survey[4][3] ? 1 : 0,
+                  service_sec_2: survey[5][0] ? 1 : 0,
+                  design_2: survey[5][1] ? 1 : 0,
+                  service_function_2: survey[5][2] ? 1 : 0,
+                  information_2: survey[5][3] ? 1 : 0,
                 })
                 .then((response) => {
                   navigate("/");

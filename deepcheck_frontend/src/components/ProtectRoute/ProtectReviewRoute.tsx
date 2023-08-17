@@ -1,21 +1,23 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { isAuthorizedSelector } from "../../states/token";
+import { isAuthorizedSelector, userSelector } from "../../states/token";
 import { toast } from "react-toastify";
 import http from "../../utils/http";
 function ProtectReviewRoute({ children }: { children: JSX.Element }) {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+  const userInfo = useRecoilValue(userSelector);
   useEffect(() => {
     http
-      .get("/user/survey/")
+      .get("/user/surveyStatus/" + userInfo?.email)
       .then((response) => {
-        setIsAdmin(true);
+        const { data } = response;
+        setIsDone(data.msg);
       })
       .catch((err) => {});
   }, []);
 
-  if (!isAdmin) {
+  if (isDone) {
     toast.error("이미 설문에 참여하였습니다!");
     return <Navigate to="/" replace />;
   }

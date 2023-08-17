@@ -13,6 +13,7 @@ import { isAuthorizedSelector } from "./states/token";
 import ProtectRoute from "./components/ProtectRoute/ProtectRoute";
 import ReviewModal from "./components/ReviewModal/ReviewModal";
 import Review from "./pages/Review/Review";
+import Survery from "./pages/Survey/Survey";
 import UserManagement from "./pages/UserManagement/UserManagement";
 import ProtectAdminRoute from "./components/ProtectRoute/ProtectAminRoute";
 
@@ -25,7 +26,8 @@ function App() {
       <Header />
       {/* <Review /> */}
       {/* <UserManagement /> */}
-      <Routes>
+      <Survery />
+      {/* <Routes>
         <Route path="/" element={<Home />} />
         <Route
           path="/deepfake"
@@ -75,7 +77,7 @@ function App() {
             </ProtectAdminRoute>
           }
         />
-      </Routes>
+      </Routes> */}
       {/* 리뷰 했는지 안했는지 검증 필요 */}
       {/* admin page 권한 확인*/}
       <ToastContainer

@@ -325,8 +325,10 @@ function Header() {
                 </div>
               ) : (
                 <div>
-                  <div>userInfo.email</div>
-                  <div onClick={logout}>로그아웃</div>
+                  <div className="user-email">{userInfo?.email}</div>
+                  <div className="logout" onClick={logout}>
+                    로그아웃
+                  </div>
                 </div>
               )}
             </div>
