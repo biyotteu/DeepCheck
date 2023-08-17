@@ -50,6 +50,6 @@ class Log(Base):
     uuid = Column(String, nullable=False)
     endpoint = Column(String, nullable=False)
     path = Column(String, nullable=False)
-    filelist = Column(MutableList.as_mutable(PickleType), default=[])
+    filelist = Column(String, nullable=False)
     score = Column(Float, nullable=True)
     user = relationship("User", backref="user_backref")

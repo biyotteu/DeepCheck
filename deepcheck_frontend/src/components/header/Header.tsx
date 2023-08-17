@@ -5,18 +5,21 @@ import Wrap from "../wrap/Wrap";
 import { slide as Menu } from "react-burger-menu";
 import http from "../../utils/http";
 import { ToastContainer, toast } from "react-toastify";
-import { isAuthorized, removeTokenAll, setToken } from "../../utils/jwt";
-import { useRecoilValue } from "recoil";
-import userAtom from "../../states/token";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  isAuthorizedSelector,
+  tokenSelector,
+  userSelector,
+} from "../../states/token";
 
 function Header() {
   const emailRegEx =
     /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
   //최소 8 자, 하나 이상의 문자, 하나의 숫자 및 하나의 특수 문자 정규식
-  const passwordRegEx =
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-  //최소 8 자, 하나 이상의 대문자, 하나의 소문자, 하나의 숫자 및 하나의 특수 문자 정규식
   //const passwordRegEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  //최소 8 자, 하나 이상의 대문자, 하나의 소문자, 하나의 숫자 및 하나의 특수 문자 정규식
+  const passwordRegEx =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{10,}$/;
 
   const emailCheck = (email: string) => {
     if (emailRegEx.test(email)) {
@@ -61,16 +64,16 @@ function Header() {
     password: "",
     passwordCheck: "",
   });
-  const userInfo = useRecoilValue(userAtom);
+  const userInfo = useRecoilValue(userSelector);
+  const isAuth = useRecoilValue(isAuthorizedSelector);
+  const [token, setToken] = useRecoilState(tokenSelector);
+  const logout = () => {
+    setToken(null);
+  };
   return (
     <header>
       {overlay && (
-        <div
-          className="overlay"
-          // onClick={() => {
-          //   setOverlay(false);
-          // }}
-        >
+        <div className="overlay">
           <div className="card">
             <div className="card-header">
               <div className="close-wrap">
@@ -79,25 +82,31 @@ function Header() {
                   alt="cross"
                   onClick={() => {
                     setOverlay(false);
+                    setLogin(true);
+                    setUser({
+                      email: "",
+                      password: "",
+                      passwordCheck: "",
+                    });
                   }}
                 />
               </div>
-              <a
-                className={login ? "active" : ""}
+              <div
+                className={login ? "card-menu active" : "card-menu"}
                 onClick={() => {
                   setLogin(true);
                 }}
               >
                 로그인
-              </a>
-              <a
-                className={!login ? "active" : ""}
+              </div>
+              <div
+                className={!login ? "card-menu active" : "card-menu"}
                 onClick={() => {
                   setLogin(false);
                 }}
               >
                 회원가입
-              </a>
+              </div>
             </div>
 
             <div className="card-content">
@@ -115,7 +124,7 @@ function Header() {
               <div className="title">*비밀번호</div>
               <input
                 type="password"
-                placeholder="영문, 숫자, 특수문자 조합 8자리 이상"
+                placeholder="대문자, 소문자, 숫자, 특수문자 조합 10자리 이상"
                 value={user.password}
                 onChange={(e) => {
                   setUser({
@@ -129,7 +138,7 @@ function Header() {
                   <div className="title">*비밀번호 확인</div>
                   <input
                     type="password"
-                    placeholder="영문, 숫자, 특수문자 조합 8자리 이상"
+                    placeholder="대문자, 소문자, 숫자, 특수문자 조합 810자리 이상"
                     value={user.passwordCheck}
                     onChange={(e) => {
                       setUser({
@@ -147,15 +156,31 @@ function Header() {
                       if (!emailCheck(user.email)) return;
                       if (login) {
                         try {
-                          const { data } = await http.post("/user/login/", {
-                            email: user.email,
-                            password: user.password,
-                          });
+                          const { data } = await http.post(
+                            "/user/login/",
+                            {
+                              username: user.email,
+                              password: user.password,
+                            },
+                            {
+                              headers: {
+                                "Content-Type":
+                                  "application/x-www-form-urlencoded",
+                              },
+                            }
+                          );
                           const { access_token, refresh_token } = data;
-                          setToken("ACCESS_TOKEN", access_token);
-                          setToken("REFRESH_TOKEN", refresh_token);
+                          setToken({
+                            accessToken: access_token,
+                            refreshToken: refresh_token,
+                          });
                           toast("로그인 성공!");
                           setOverlay(false);
+                          setUser({
+                            email: "",
+                            password: "",
+                            passwordCheck: "",
+                          });
                         } catch (err) {
                           console.log(err);
                         }
@@ -170,15 +195,28 @@ function Header() {
                           return;
                         try {
                           const { data } = await http.post("/user/create/", {
-                            email: user.email,
+                            username: user.email,
                             password1: user.password,
                             password2: user.passwordCheck,
                           });
 
                           setOverlay(false);
+                          setUser({
+                            email: "",
+                            password: "",
+                            passwordCheck: "",
+                          });
                           toast("회원가입 성공!\n로그인 해주세요!");
+
                           // console.log(data);
-                        } catch (err) {}
+                        } catch (err) {
+                          const { data }: any = err;
+                          if (data && data.detail) {
+                            toast.error(data.detail);
+                          } else {
+                            toast.error("아이디와 비밀번호를 확인해주세요!");
+                          }
+                        }
                       }
                     }
 
@@ -193,6 +231,7 @@ function Header() {
               enableMultiContainer
               containerId={"login"}
               position={toast.POSITION.BOTTOM_RIGHT}
+              autoClose={1000}
             />
           </div>
         </div>
@@ -215,26 +254,48 @@ function Header() {
             </NavLink>
           </div>
           <div className="user">
-            {isAuthorized() ? (
-              <a
-                className="register"
-                onClick={() => {
-                  removeTokenAll();
-                }}
-              >
-                로그아웃
-              </a>
+            {isAuth ? (
+              <div className="logout-wrap">
+                {userInfo?.permission && (
+                  <div className="admin-wrap">
+                    <div className="admin-card">
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        관리자 메뉴
+                        <img src="/assets/icons/down-arrow.svg" />
+                      </div>
+                      <Link to="/usermanage" className="admin-menu">
+                        사용자 관리
+                      </Link>
+                      <Link to="/usermanage" className="admin-menu">
+                        리뷰 결과
+                      </Link>
+                    </div>
+                  </div>
+                )}
+                <a className="register" onClick={logout}>
+                  로그아웃
+                </a>
+              </div>
             ) : (
               <>
                 <a
                   className="login"
                   onClick={() => {
+                    setLogin(true);
                     setOverlay(true);
                   }}
                 >
                   로그인
                 </a>
-                <a className="register">회원가입</a>
+                <a
+                  className="register"
+                  onClick={() => {
+                    setLogin(false);
+                    setOverlay(true);
+                  }}
+                >
+                  회원가입
+                </a>
               </>
             )}
           </div>
@@ -252,7 +313,7 @@ function Header() {
             }
           >
             <div className="login">
-              {true ? (
+              {!isAuth ? (
                 <div
                   className="login-button"
                   onClick={() => {
@@ -265,7 +326,7 @@ function Header() {
               ) : (
                 <div>
                   <div>userInfo.email</div>
-                  <div>로그아웃</div>
+                  <div onClick={logout}>로그아웃</div>
                 </div>
               )}
             </div>

@@ -2,7 +2,10 @@ import { Cookies } from "react-cookie";
 
 const cookies = new Cookies();
 
-export function setToken(key: "ACCESS_TOKEN" | "REFRESH_TOKEN", token: string) {
+export function setTokenCookie(
+  key: "ACCESS_TOKEN" | "REFRESH_TOKEN",
+  token: string
+) {
   const expires = new Date();
   expires.setDate(expires.getDate() + 14);
 
@@ -12,13 +15,13 @@ export function setToken(key: "ACCESS_TOKEN" | "REFRESH_TOKEN", token: string) {
   });
 }
 
-export function removeToken(key: "ACCESS_TOKEN" | "REFRESH_TOKEN") {
+export function removeTokenCookie(key: "ACCESS_TOKEN" | "REFRESH_TOKEN") {
   cookies.remove(key, { path: "/" });
 }
 
 export function removeTokenAll() {
-  removeToken("ACCESS_TOKEN");
-  removeToken("REFRESH_TOKEN");
+  removeTokenCookie("ACCESS_TOKEN");
+  removeTokenCookie("REFRESH_TOKEN");
 }
 
 export function getAccessToken() {
@@ -29,6 +32,6 @@ export function getRefreshToken() {
   return cookies.get("REFRESH_TOKEN");
 }
 
-export function isAuthorized() {
-  return !!getAccessToken();
-}
+//export function isAuthorized() {
+//  return !!getAccessToken();
+//}

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAccessToken, getRefreshToken, setToken } from "./jwt";
+import { getAccessToken, getRefreshToken, setTokenCookie } from "./jwt";
 
 const http = axios.create({ baseURL: "https://deepcheck.site/api/" });
 
@@ -40,8 +40,8 @@ http.interceptors.response.use(
       const { access_token: newAccessToken, refresh_token: newRefreshToken } =
         data;
 
-      setToken("ACCESS_TOKEN", newAccessToken);
-      setToken("REFRESH_TOKEN", newRefreshToken);
+      setTokenCookie("ACCESS_TOKEN", newAccessToken);
+      setTokenCookie("REFRESH_TOKEN", newRefreshToken);
 
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
       // 401로 요청 실패했던 요청 새로운 accessToken으로 재요청

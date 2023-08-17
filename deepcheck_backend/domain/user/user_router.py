@@ -24,7 +24,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 REFRESH_TOKEN_EXPIRE_DAYS = 7 
 SECRET_KEY = getJsonValue("SECRET")
 ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login/")
 
 router = APIRouter(
     prefix="/api/user",
@@ -94,12 +94,14 @@ def loginForAccessToken(data: OAuth2PasswordRequestForm = Depends(), db: Session
     # make access token
     access_data = {
         "username": user.username,
-        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        "permission": user.permission
     }
 
     refresh_data = {
         "sub": user.username,
-        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+        "permission": user.permission
     }
 
     access_token = jwt.encode(access_data, SECRET_KEY, algorithm=ALGORITHM)

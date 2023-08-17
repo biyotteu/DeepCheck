@@ -1,0 +1,126 @@
+{
+  "questions": [
+    {
+      "title": "1. 귀하의 성별은 무엇입니까?",
+      "multichoise": false,
+      "options": [
+        { "title": "남자", "value": 1 },
+        { "title": "여자", "value": 2 }
+      ]
+    },
+    {
+      "title": "2. 귀하의 연령대는 어떻게 되십니까?",
+      "multichoise": false,
+      "options": [
+        {
+          "title": "10대",
+          "value": 10
+        },
+        {
+          "title": "20대",
+          "value": 20
+        },
+        {
+          "title": "30대",
+          "value": 30
+        },
+        {
+          "title": "40대",
+          "value": 40
+        },
+        {
+          "title": "50대 이상",
+          "value": 50
+        }
+      ]
+    },
+    {
+      "title": "3. DeepCheck 서비스의 전반적인 만족도는 어떻게 되나요?",
+      "multichoise": false,
+      "options": [
+        {
+          "title": "매우 불만족",
+          "value": 1
+        },
+        {
+          "title": "불만족",
+          "value": 2
+        },
+        {
+          "title": "보통",
+          "value": 3
+        },
+        {
+          "title": "만족",
+          "value": 4
+        },
+        {
+          "title": "매우 만족",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "title": "4. DeepCheck 서비스에서 만족스러운 기능은 무엇인가요?",
+      "multichoise": true,
+      "options": [
+        {
+          "title": "Deepfake 탐지",
+          "value": 1
+        },
+        {
+          "title": "Deepfake 방지",
+          "value": 2
+        },
+        {
+          "title": "Fake audio 탐지",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "title": "5. DeepCheck 서비스 이용이 만족스러운 사항은 무엇인가요? [선택]",
+      "multichoise": true,
+      "options": [
+        {
+          "title": "서비스 보안성",
+          "value": 1
+        },
+        {
+          "title": "디자인 직관성",
+          "value": 2
+        },
+        {
+          "title": "서비스 기능",
+          "value": 3
+        },
+        {
+          "title": "콘텐츠 및 정보제공",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "title": "6. DeepCheck 서비스 이용이 만족스럽지 않은 사항은 무엇인가요? [선택]",
+      "multichoise": true,
+      "options": [
+        {
+          "title": "서비스 보안성",
+          "value": 1
+        },
+        {
+          "title": "디자인 직관성",
+          "value": 2
+        },
+        {
+          "title": "서비스 기능",
+          "value": 3
+        },
+        {
+          "title": "콘텐츠 및 정보제공",
+          "value": 4
+        }
+      ]
+    }
+  ]
+}
