@@ -29,10 +29,6 @@ class Survey(Base):
     unsatisfiedReason = Column(String, nullable=True)
 
 
-
-    
-
-
 class Log(Base):
     __tablename__ = "log"
 
@@ -44,4 +40,3 @@ class Log(Base):
     filelist = Column(MutableList.as_mutable(PickleType), default=[])
     score = Column(Float, nullable=True)
     user = relationship("User", backref="user_backref")
->>>>>>> 289d2a0c508d81c7f07aec9a35ea430f10194941

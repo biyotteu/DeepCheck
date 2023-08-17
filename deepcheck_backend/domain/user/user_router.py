@@ -161,11 +161,11 @@ def doSurvey(survey_create: user_schema.SurveyCreate, db: Session = Depends(getD
 @router.get("/surveyStatus/{email}", status_code=status.HTTP_204_NO_CONTENT)
 def getSurveyStatus(email, db: Session = Depends(getDB)):
     SurveyInfo = user_crud.getSurveyInfo(db=db, email=email)
-    resmsg = False
+    resMsg = False
     if(SurveyInfo):
-        resmsg = True
+        resMsg = True
     return JSONResponse(status_code=200, headers=headers, content={
-        'msg': resmsg
+        'msg': resMsg
     })
 
   
