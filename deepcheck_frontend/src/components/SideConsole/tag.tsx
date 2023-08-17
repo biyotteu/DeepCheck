@@ -12,7 +12,7 @@ type SideConsoleTagProps = {
 
 function SideConsoleTag({ title, type, isFake }: SideConsoleTagProps) {
   return (
-    <div className={"tag " + (isFake ? "fake" : "")}>
+    <div className={"tag " + (isFake ? "fake" : type === "info" ? "info" : "")}>
       <div className="icon-wrap">
         {type === "picture" && <AIIcon className="icon" />}
         {type === "info" && <PictureIcon className="icon" />}

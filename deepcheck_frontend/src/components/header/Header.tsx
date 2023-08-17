@@ -5,11 +5,18 @@ import Wrap from "../wrap/Wrap";
 import { slide as Menu } from "react-burger-menu";
 import http from "../../utils/http";
 import { ToastContainer, toast } from "react-toastify";
+import { isAuthorized, removeTokenAll, setToken } from "../../utils/jwt";
+import { useRecoilValue } from "recoil";
+import userAtom from "../../states/token";
 
 function Header() {
   const emailRegEx =
     /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
-  const passwordRegEx = /^[A-Za-z0-9]{8,20}$/;
+  //최소 8 자, 하나 이상의 문자, 하나의 숫자 및 하나의 특수 문자 정규식
+  const passwordRegEx =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  //최소 8 자, 하나 이상의 대문자, 하나의 소문자, 하나의 숫자 및 하나의 특수 문자 정규식
+  //const passwordRegEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
   const emailCheck = (email: string) => {
     if (emailRegEx.test(email)) {
@@ -20,7 +27,10 @@ function Header() {
     }
   };
   const passwordCheck = (password: string) => {
+    // if (!passwordRegEx.test(password)) {
     if (password.match(passwordRegEx) === null) {
+      console.log(password, "@@@@");
+      console.log(passwordRegEx.test(password));
       toast.error("비밀번호 형식을 확인해주세요", { containerId: "login" });
       return false;
     } else {
@@ -29,6 +39,7 @@ function Header() {
   };
   const passwordDoubleCheck = (password: string, passwordChk: string) => {
     if (password !== passwordChk) {
+      console.log("#####");
       toast.error("비밀번호가 다릅니다.", { containerId: "login" });
       return false;
     } else {
@@ -53,6 +64,7 @@ function Header() {
     password: "",
     passwordCheck: "",
   });
+  const userInfo = useRecoilValue(userAtom);
   return (
     <header>
       {overlay && (
@@ -138,19 +150,21 @@ function Header() {
                       if (!emailCheck(user.email)) return;
                       if (login) {
                         try {
-                          const { data } = await http.post("/user/login", {
+                          const { data } = await http.post("/user/login/", {
                             email: user.email,
                             password: user.password,
                           });
+                          const { access_token, refresh_token } = data;
+                          setToken("ACCESS_TOKEN", access_token);
+                          setToken("REFRESH_TOKEN", refresh_token);
                           toast("로그인 성공!");
-                          console.log(data);
                           setOverlay(false);
                         } catch (err) {
                           console.log(err);
                         }
                       } else {
                         if (
-                          !passwordCheck(user.password) &&
+                          !passwordCheck(user.password) ||
                           !passwordDoubleCheck(
                             user.password,
                             user.passwordCheck
@@ -158,15 +172,15 @@ function Header() {
                         )
                           return;
                         try {
-                          const { data } = await http.post("/user/create", {
-                            email: user.email,
-                            password1: user.password,
-                            password2: user.passwordCheck,
-                          });
+                          // const { data } = await http.post("/user/create/", {
+                          //   email: user.email,
+                          //   password1: user.password,
+                          //   password2: user.passwordCheck,
+                          // });
 
                           setOverlay(false);
                           toast("회원가입 성공!\n로그인 해주세요!");
-                          console.log(data);
+                          // console.log(data);
                         } catch (err) {}
                       }
                     }
@@ -196,7 +210,7 @@ function Header() {
             <NavLink to="/deepfake" className={getClass}>
               Deepfake 탐지
             </NavLink>
-            <NavLink to="/preventdeepfake" className={getClass}>
+            <NavLink to="/watermark" className={getClass}>
               Deepfake 방지
             </NavLink>
             <NavLink to="/fakeaudio" className={getClass}>
@@ -204,15 +218,28 @@ function Header() {
             </NavLink>
           </div>
           <div className="user">
-            <a
-              className="login"
-              onClick={() => {
-                setOverlay(true);
-              }}
-            >
-              로그인
-            </a>
-            <a className="register">회원가입</a>
+            {isAuthorized() ? (
+              <a
+                className="register"
+                onClick={() => {
+                  removeTokenAll();
+                }}
+              >
+                로그아웃
+              </a>
+            ) : (
+              <>
+                <a
+                  className="login"
+                  onClick={() => {
+                    setOverlay(true);
+                  }}
+                >
+                  로그인
+                </a>
+                <a className="register">회원가입</a>
+              </>
+            )}
           </div>
         </div>
         <div className="mobile-menu">
@@ -240,7 +267,8 @@ function Header() {
                 </div>
               ) : (
                 <div>
-                  <p>test</p>
+                  <div>userInfo.email</div>
+                  <div>로그아웃</div>
                 </div>
               )}
             </div>
@@ -252,7 +280,7 @@ function Header() {
               Deepfake 탐지
             </NavLink>
             <NavLink
-              to="/preventdeepfake"
+              to="/watermark"
               className="menu"
               onClick={closeAllMenusOnEsc}
             >

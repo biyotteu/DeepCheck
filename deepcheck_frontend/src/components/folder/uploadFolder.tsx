@@ -28,7 +28,7 @@ function UploadFolder({
   isAudio = false,
 }: UploadFolderProps) {
   return (
-    <div>
+    <div className="upload-file">
       {!isLoading && !isComplete && (
         <div className="file">
           <div className="click" onClick={onClick}>

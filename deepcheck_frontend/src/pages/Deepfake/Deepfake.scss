@@ -7,6 +7,8 @@
   justify-content: center;
   flex-direction: column;
   // overflow: hidden;
+
+  overflow-y: scroll;
   .upload {
     position: absolute;
   }

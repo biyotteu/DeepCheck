@@ -92,18 +92,19 @@ class Watermark:
                     y2 = centery + 128
 
                 img_np = self.tf_toTensor(origin_image).cuda()
-                img_np[:,y1:y2, x1:x2] += self.pgd_attack.up
+                print(img_np.shape, self.pgd_attack.up.shape)
+                print(x1, x2, y1, y2)   
+                # if img_np.shape[1] < 256 or img_np.shape[2] < 256:
+                #     img_np[:,:,:] += self.pgd_attack.up[:,:min(img_np.shape[1],256),:min(img_np.shape[2],256)]
+                # else:
+                img_np[:,y1:y2, x1:x2] += self.pgd_attack.up[:,:y2-y1,:x2-x1]
                 vutils.save_image(img_np, os.path.join(dir_path,"watermark.jpg"), nrow=1, normalize=True, range=(-1., 1.))
                 response["watermark"] = os.path.join(out_path,"watermark.jpg")
 
         
             for face_idx in range(len(faces)):
-                image = Image.fromarray(faces[face_idx])
-                img = image.convert("RGB")
-                img = self.tf(img).unsqueeze(0)
-
-
                 gan_result = {
+                    "origin":"",
                     "AttGAN": {
                         "gen":"",
                         "advgen":"",
@@ -121,7 +122,14 @@ class Watermark:
                         "advgen":"",
                     }
                 }
-                
+
+                image = Image.fromarray(faces[face_idx])
+                image.save(os.path.join(dir_path, 'origin_face{}.jpg'.format(face_idx)))
+                gan_result["origin"] = os.path.join(out_path, 'origin_face{}.jpg'.format(face_idx))
+                # image.save()
+                img = image.convert("RGB")
+                img = self.tf(img).unsqueeze(0)
+
                 # AttGan
                 for idx, (img_a, att_a, c_org) in enumerate(self.test_dataloader):
                     img_a = img.cuda() if self.args_attack.global_settings.gpu else img_a
@@ -147,15 +155,15 @@ class Watermark:
                         noattack_list.append(gen_noattack)
                     
                     for j in [len(samples)-3]:#range(len(samples)-2):
-                        out_file = os.path.join(dir_path, 'AttGAN_advgen.jpg')
+                        out_file = os.path.join(dir_path, 'AttGAN_advgen_face{}.jpg'.format(face_idx))
                         # out_file = os.path.join(dir_path, 'AttGAN_advgen_{}.jpg'.format(j))
                         vutils.save_image(samples[j+2], out_file, nrow=1, normalize=True, range=(-1., 1.))
 
-                        out_file = os.path.join(dir_path, 'AttGAN_gen.jpg')
+                        out_file = os.path.join(dir_path, 'AttGAN_gen_face{}.jpg'.format(face_idx))
                         # out_file = os.path.join(dir_path, 'AttGAN_gen_{}.jpg'.format(j))
                         vutils.save_image(noattack_list[j], out_file, nrow=1, normalize=True, range=(-1., 1.))
-                        gan_result["AttGAN"]["gen"] = os.path.join(out_path, 'AttGAN_gen.jpg')
-                        gan_result["AttGAN"]["advgen"] = os.path.join(out_path, 'AttGAN_advgen.jpg')
+                        gan_result["AttGAN"]["gen"] = os.path.join(out_path, 'AttGAN_gen_face{}.jpg'.format(face_idx))
+                        gan_result["AttGAN"]["advgen"] = os.path.join(out_path, 'AttGAN_advgen_face{}.jpg'.format(face_idx))
                     
                     break
 
@@ -172,17 +180,17 @@ class Watermark:
                     
                     for j in [len(x_fake_list)-1]:#range(len(x_fake_list)):
                         gen_noattack = x_noattack_list[j]
-                        out_file = os.path.join(dir_path, 'stargan_gen.jpg')
+                        out_file = os.path.join(dir_path, 'stargan_gen_face{}.jpg'.format(face_idx))
                         # out_file = os.path.join(dir_path, 'stargan_gen_{}.jpg'.format(j))
                         vutils.save_image(gen_noattack, out_file, nrow=1, normalize=True, range=(-1., 1.))
                         
                         gen = x_fake_list[j]
-                        out_file = os.path.join(dir_path, 'stargan_advgen.jpg')
+                        out_file = os.path.join(dir_path, 'stargan_advgen_face{}.jpg'.format(face_idx))
                         # out_file = os.path.join(dir_path, 'stargan_advgen_{}.jpg'.format(j))
                         vutils.save_image(gen, out_file, nrow=1, normalize=True, range=(-1., 1.))
 
-                        gan_result["StarGAN"]["gen"] = os.path.join(out_path, 'stargan_gen.jpg')
-                        gan_result["StarGAN"]["advgen"] = os.path.join(out_path, 'stargan_advgen.jpg')
+                        gan_result["StarGAN"]["gen"] = os.path.join(out_path, 'stargan_gen_face{}.jpg'.format(face_idx))
+                        gan_result["StarGAN"]["advgen"] = os.path.join(out_path, 'stargan_advgen_face{}.jpg'.format(face_idx))
 
                     break
 
@@ -198,17 +206,17 @@ class Watermark:
                     
                     for j in [len(x_fake_list)-1]:#range(len(x_fake_list)):
                         gen_noattack = x_noattack_list[j]
-                        out_file = os.path.join(dir_path, 'attentiongan_gen.jpg')
+                        out_file = os.path.join(dir_path, 'attentiongan_gen_face{}.jpg'.format(face_idx))
                         # out_file = os.path.join(dir_path, 'attentiongan_gen_{}.jpg'.format(j))
                         vutils.save_image(gen_noattack, out_file, nrow=1, normalize=True, range=(-1., 1.))
                         
                         gen = x_fake_list[j]
-                        out_file = os.path.join(dir_path, 'attentiongan_advgen.jpg')
+                        out_file = os.path.join(dir_path, 'attentiongan_advgen_face{}.jpg'.format(face_idx))
                         # out_file = os.path.join(dir_path, 'attentiongan_advgen_{}.jpg'.format(j))
                         vutils.save_image(gen, out_file, nrow=1, normalize=True, range=(-1., 1.))
 
-                        gan_result["AttentionGAN"]["gen"] = os.path.join(out_path, 'attentiongan_gen.jpg')
-                        gan_result["AttentionGAN"]["advgen"] = os.path.join(out_path, 'attentiongan_advgen.jpg')
+                        gan_result["AttentionGAN"]["gen"] = os.path.join(out_path, 'attentiongan_gen_face{}.jpg'.format(face_idx))
+                        gan_result["AttentionGAN"]["advgen"] = os.path.join(out_path, 'attentiongan_advgen_face{}.jpg'.format(face_idx))
 
                     break
                 
@@ -234,15 +242,15 @@ class Watermark:
                         mask[mask>0.5] = 1
                         mask[mask<0.5] = 0
 
-                        out_file = os.path.join(dir_path, 'HiSD_gen.jpg'.format(j))
+                        out_file = os.path.join(dir_path, 'HiSD_gen_face{}.jpg'.format(face_idx))
                         vutils.save_image(gen_noattack, out_file, nrow=1, normalize=True, range=(-1., 1.))
                         
                         gen = x_fake_list[j]
-                        out_file = os.path.join(dir_path, 'HiSD_advgen.jpg'.format(j))
+                        out_file = os.path.join(dir_path, 'HiSD_advgen_face{}.jpg'.format(face_idx))
                         vutils.save_image(gen, out_file, nrow=1, normalize=True, range=(-1., 1.))
 
-                        gan_result["HiSD"]["gen"] = os.path.join(out_path, 'HiSD_gen.jpg')
-                        gan_result["HiSD"]["advgen"] = os.path.join(out_path, 'HiSD_advgen.jpg')
+                        gan_result["HiSD"]["gen"] = os.path.join(out_path, 'HiSD_gen_face{}.jpg'.format(face_idx))
+                        gan_result["HiSD"]["advgen"] = os.path.join(out_path, 'HiSD_advgen_face{}.jpg'.format(face_idx))
                         
                     break
                 response["faces"].append(gan_result)
