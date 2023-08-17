@@ -22,14 +22,14 @@ function Survey() {
     "rgba(160, 165, 250, 1)",
     "rgba(160, 165, 250, 1)",
   ];
-  const [index, setIndex] = useState(1);
+  const [index, setIndex] = useState(0);
   const [datas, setDatas] = useState([
     [30, 40, 60],
-    [20, 20, 20, 20, 20, 20],
-    [],
-    [],
-    [],
-    [],
+    [50, 20, 34, 20, 54, 20],
+    [40, 20, 53, 43, 11, 20],
+    [80, 20, 20, 20],
+    [90, 20, 43, 23, 13],
+    [50, 20, 32, 43, 55],
   ]);
   useEffect(() => {
     const getSurvey = async () => {
@@ -60,36 +60,51 @@ function Survey() {
           <div className="content">
             <div className="question-title">
               <img src="/assets/icons/message.svg" />
-              {questions.questions[index - 1].title}
-              <div className="response-count">{datas[index - 1][0]}개</div>
+              {questions.questions[index].title}
+              <div className="response-count">{datas[index][0]}개</div>
             </div>
-            <Chart
-              options={{
-                chart: {
-                  width: 1000,
-                  height: 1000,
-                },
-                legend: {
-                  show: false,
-                },
-                plotOptions: {},
-                stroke: {
-                  //   lineCap: "round",
-                },
-                fill: {
-                  colors: [
-                    "rgba(70, 42, 241, 1)",
-                    "rgba(83, 98, 246, 1)",
-                    "rgba(118, 129, 248, 1)",
-                    "rgba(160, 165, 250, 1)",
-                    "rgba(160, 165, 250, 1)",
-                  ],
-                },
-              }}
-              series={datas[index - 1].slice(1, datas[index - 1].length)}
-              type="pie"
-              width={500}
-            />
+            <div className="chart-wrap">
+              <Chart
+                options={{
+                  chart: {
+                    width: 1000,
+                    height: 1000,
+                  },
+                  legend: {
+                    show: false,
+                  },
+                  plotOptions: {},
+                  stroke: {
+                    //   lineCap: "round",
+                  },
+                  fill: {
+                    colors: [
+                      "rgba(70, 42, 241, 1)",
+                      "rgba(83, 98, 246, 1)",
+                      "rgba(118, 129, 248, 1)",
+                      "rgba(160, 165, 250, 1)",
+                      "rgba(160, 165, 250, 1)",
+                    ],
+                  },
+                }}
+                series={datas[index].slice(1, datas[index].length)}
+                type="pie"
+                width={500}
+              />
+              <div className="region">
+                {questions.questions[index].options.map((item, idx) => {
+                  return (
+                    <div className="item">
+                      <div
+                        className="rec"
+                        style={{ backgroundColor: colors[idx] }}
+                      />
+                      {item.title + " (" + datas[index][idx] + "%)"}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
           <div className="pagenation-wrap">
             <ReactPaginate
@@ -98,6 +113,7 @@ function Survey() {
               breakLabel="..."
               nextLabel=">"
               onPageChange={(event) => {
+                console.log(event.selected);
                 setIndex(event.selected);
               }}
               marginPagesDisplayed={1}

@@ -13,18 +13,18 @@ import { userSelector } from "../../states/token";
 
 function ReviewModal() {
   const [visible, setVisible] = useRecoilState(reviewSelector);
-  const userInfo = useRecoilValue(userSelector);
-  useEffect(() => {
-    const check = async () => {
-      http.get("/user/surveyStatus/" + userInfo?.email).then((res) => {
-        if (res.data.detail) {
-          setVisible(false);
-        } else {
-          setVisible(true);
-        }
-      });
-    };
-  }, []);
+  // const userInfo = useRecoilValue(userSelector);
+  // useEffect(() => {
+  //   const check = async () => {
+  //     http.get("/user/surveyStatus/" + userInfo?.email).then((res) => {
+  //       if (res.data.detail) {
+  //         setVisible(false);
+  //       } else {
+  //         setVisible(true);
+  //       }
+  //     });
+  //   };
+  // }, []);
   return (
     <div
       className="review-modal"

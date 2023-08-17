@@ -62,6 +62,34 @@
           line-height: 140%;
         }
       }
+      .chart-wrap {
+        display: flex;
+        justify-content: center;
+        height: 70%;
+        .region {
+          .item {
+            white-space: nowrap;
+            // width: wra;
+            margin-bottom: 19px;
+            // width: 250px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            color: var(--grey-grey-060, #374553);
+            /* Title-sm */
+            font-family: SUIT;
+            font-size: 24px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 130%; /* 31.2px */
+            .rec {
+              border-radius: 4px;
+              width: 28px;
+              height: 28px;
+            }
+          }
+        }
+      }
     }
     .pagenation-wrap {
       display: flex;
