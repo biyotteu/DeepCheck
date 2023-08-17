@@ -282,3 +282,21 @@ def getUserList(user_list: user_schema.UserGetListRequest, db: Session = Depends
         })
     except:
         raise nodata_exception
+
+
+@router.get('/total/', status_code=status.HTTP_204_NO_CONTENT)
+def getUserList(db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
+    nodata_exception = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="No Data",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        if current_user.permission:
+            userlist = db.query(User).all()
+        return JSONResponse(status_code=200, headers=headers, content={
+            "msg": "Success",
+            "usertotal": len(userlist)
+        })
+    except:
+        raise nodata_exception
