@@ -26,8 +26,8 @@ function App() {
       <Header />
       {/* <Review /> */}
       {/* <UserManagement /> */}
-      <Survery />
-      {/* <Routes>
+      {/* <Survery /> */}
+      <Routes>
         <Route path="/" element={<Home />} />
         <Route
           path="/deepfake"
@@ -77,7 +77,7 @@ function App() {
             </ProtectAdminRoute>
           }
         />
-      </Routes> */}
+      </Routes>
       {/* 리뷰 했는지 안했는지 검증 필요 */}
       {/* admin page 권한 확인*/}
       <ToastContainer

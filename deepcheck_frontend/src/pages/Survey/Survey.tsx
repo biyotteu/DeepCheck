@@ -46,7 +46,7 @@ function Survey() {
           <div className="content">
             <div className="question-title">
               <img src="/assets/icons/message.svg" />
-              questions.questions[idx].title
+              {questions.questions[index - 1].title}
               <div className="response-count"></div>
             </div>
             <Chart
