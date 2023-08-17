@@ -13,7 +13,7 @@ app = FastAPI(
 )
 
 origins = [
-    "*",
+    "217.149.220.237",
 ]
 
 app.add_middleware(
