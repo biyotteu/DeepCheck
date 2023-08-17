@@ -176,22 +176,22 @@ def getSurveyInfo(db: Session = Depends(getDB),  current_user: User = Depends(ge
         detail="No Data",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    if current_user.permission:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="접근 권한이 없습니다.")
+    # if current_user.permission:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+    #                         detail="접근 권한이 없습니다.")
  
-    genderAll = db.query(Survey.gender).count()
+    genderAll = db.query(Survey.gender).count()+1
     genderMale = db.query(Survey).filter(Survey.gender == "M").count() / genderAll
     genderFemale = db.query(Survey).filter(Survey.gender == "F").count() / genderAll
 
-    ageAll = db.query(Survey.age).count()
+    ageAll = db.query(Survey.age).count()+1
     age10 = db.query(Survey).filter(Survey.age == 10).count() / ageAll
     age20 = db.query(Survey).filter(Survey.age == 20).count() / ageAll
     age30 = db.query(Survey).filter(Survey.age == 30).count() / ageAll
     age40 = db.query(Survey).filter(Survey.age == 40).count() / ageAll
     age50 = db.query(Survey).filter(Survey.age == 50).count() / ageAll
 
-    rateAll = db.query(Survey.rate).count()
+    rateAll = db.query(Survey.rate).count()+1
     rate1 = db.query(Survey).filter(Survey.rate == 1).count() / rateAll
     rate2 = db.query(Survey).filter(Survey.rate == 2).count() / rateAll
     rate3 = db.query(Survey).filter(Survey.rate == 3).count() / rateAll
@@ -201,43 +201,51 @@ def getSurveyInfo(db: Session = Depends(getDB),  current_user: User = Depends(ge
     satis_deepfake_detect = db.query(Survey).filter(Survey.deepfake_detect == 1).count()
     satis_deepfake_protect = db.query(Survey).filter(Survey.deepfake_protect == 1).count()
     satis_fakeaudio_detect = db.query(Survey).filter(Survey.fakeaudio_detect == 1).count()
-    satis_all = satis_deepfake_detect + satis_deepfake_protect + satis_fakeaudio_detect
+    satis_all = satis_deepfake_detect + satis_deepfake_protect + satis_fakeaudio_detect+1
     
     unsatis_service_sec = db.query(Survey).filter(Survey.service_sec_1 == 1).count()
     unsatis_design = db.query(Survey).filter(Survey.design_1 == 1).count()
     unsatis_service_function = db.query(Survey).filter(Survey.service_function_1 == 1).count()
     unsatis_information = db.query(Survey).filter(Survey.information_1 == 1).count()
-    unsatis_all = unsatis_service_sec + unsatis_design + unsatis_service_function + unsatis_information
+    unsatis_all = unsatis_service_sec + unsatis_design + unsatis_service_function + unsatis_information+1
 
     reason_service_sec = db.query(Survey).filter(Survey.service_sec_2 == 1).count()
     reason_design = db.query(Survey).filter(Survey.design_2 == 1).count()
     reason_service_function = db.query(Survey).filter(Survey.service_function_2 == 1).count()
     reason_information = db.query(Survey).filter(Survey.information_2 == 1).count()
-    reason_all = reason_service_sec + reason_design + reason_service_function + reason_information
+    reason_all = reason_service_sec + reason_design + reason_service_function + reason_information+1
 
-    try:
-        return JSONResponse(status_code=200, headers=headers, content={
-            "gender": {
-                [genderAll, round(genderMale * 100), round(genderFemale * 100)]
-            },
-            "age" : {
-                [ageAll, round(age10 * 100), round(age20 * 100), round(age30 * 100), round(age40 * 100), round(age50 * 100)]
-            },
-            'rate' : {
-                [rateAll, round(rate1 * 100), round(rate2 * 100),round(rate3 * 100),round(rate4 * 100),round(rate5 * 100)]
-            },
-            'satisfied' : {
-                [satis_all, round((satis_deepfake_detect / satis_all) * 100), round((satis_deepfake_protect / satis_all) * 100), round((satis_fakeaudio_detect / satis_all) * 100)]
-            },
-            'unsatisfied' : {
-                [unsatis_all, round((unsatis_service_sec / unsatis_all) * 100), round((unsatis_design / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100)]
-            },
-            'unsatisfiedReson' : {
-                [reason_all, round((reason_service_sec / reason_all) * 100),  round((reason_design / reason_all) * 100), round((reason_service_function / reason_all) * 100), round((reason_information / reason_all) * 100)]
-            }
-        })
-    except:
-        raise nodata_exception
+    # try:
+    #     return JSONResponse(status_code=200, headers=headers, content={
+    #         "gender": {
+    #             [genderAll, round(genderMale * 100), round(genderFemale * 100)]
+    #         },
+    #         "age" : {
+    #             [ageAll, round(age10 * 100), round(age20 * 100), round(age30 * 100), round(age40 * 100), round(age50 * 100)]
+    #         },
+    #         'rate' : {
+    #             [rateAll, round(rate1 * 100), round(rate2 * 100),round(rate3 * 100),round(rate4 * 100),round(rate5 * 100)]
+    #         },
+    #         'satisfied' : {
+    #             [satis_all, round((satis_deepfake_detect / satis_all) * 100), round((satis_deepfake_protect / satis_all) * 100), round((satis_fakeaudio_detect / satis_all) * 100)]
+    #         },
+    #         'unsatisfied' : {
+    #             [unsatis_all, round((unsatis_service_sec / unsatis_all) * 100), round((unsatis_design / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100)]
+    #         },
+    #         'unsatisfiedReson' : {
+    #             [reason_all, round((reason_service_sec / reason_all) * 100),  round((reason_design / reason_all) * 100), round((reason_service_function / reason_all) * 100), round((reason_information / reason_all) * 100)]
+    #         }
+    #     })
+    # except:
+    #     raise nodata_exception
+    return JSONResponse(status_code=200, headers=headers, content={
+            "gender":[genderAll, round(genderMale * 100), round(genderFemale * 100)],
+            "age":[ageAll, round(age10 * 100), round(age20 * 100), round(age30 * 100), round(age40 * 100), round(age50 * 100)],
+            'rate' : [rateAll, round(rate1 * 100), round(rate2 * 100),round(rate3 * 100),round(rate4 * 100),round(rate5 * 100)],
+            'satisfied':[satis_all, round((satis_deepfake_detect / satis_all) * 100), round((satis_deepfake_protect / satis_all) * 100), round((satis_fakeaudio_detect / satis_all) * 100)],
+            'unsatisfied':[unsatis_all, round((unsatis_service_sec / unsatis_all) * 100), round((unsatis_design / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100)],
+            'unsatisfiedReson' :[reason_all, round((reason_service_sec / reason_all) * 100),  round((reason_design / reason_all) * 100), round((reason_service_function / reason_all) * 100), round((reason_information / reason_all) * 100)]
+    })
 
 
 @router.post('/userlist/', status_code=status.HTTP_204_NO_CONTENT)
