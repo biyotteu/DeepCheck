@@ -215,37 +215,18 @@ def getSurveyInfo(db: Session = Depends(getDB),  current_user: User = Depends(ge
     reason_information = db.query(Survey).filter(Survey.information_2 == 1).count()
     reason_all = reason_service_sec + reason_design + reason_service_function + reason_information+1
 
-    # try:
-    #     return JSONResponse(status_code=200, headers=headers, content={
-    #         "gender": {
-    #             [genderAll, round(genderMale * 100), round(genderFemale * 100)]
-    #         },
-    #         "age" : {
-    #             [ageAll, round(age10 * 100), round(age20 * 100), round(age30 * 100), round(age40 * 100), round(age50 * 100)]
-    #         },
-    #         'rate' : {
-    #             [rateAll, round(rate1 * 100), round(rate2 * 100),round(rate3 * 100),round(rate4 * 100),round(rate5 * 100)]
-    #         },
-    #         'satisfied' : {
-    #             [satis_all, round((satis_deepfake_detect / satis_all) * 100), round((satis_deepfake_protect / satis_all) * 100), round((satis_fakeaudio_detect / satis_all) * 100)]
-    #         },
-    #         'unsatisfied' : {
-    #             [unsatis_all, round((unsatis_service_sec / unsatis_all) * 100), round((unsatis_design / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100)]
-    #         },
-    #         'unsatisfiedReson' : {
-    #             [reason_all, round((reason_service_sec / reason_all) * 100),  round((reason_design / reason_all) * 100), round((reason_service_function / reason_all) * 100), round((reason_information / reason_all) * 100)]
-    #         }
-    #     })
-    # except:
-    #     raise nodata_exception
-    return JSONResponse(status_code=200, headers=headers, content={
+    try:
+        return JSONResponse(status_code=200, headers=headers, content={
             "gender":[genderAll, round(genderMale * 100), round(genderFemale * 100)],
             "age":[ageAll, round(age10 * 100), round(age20 * 100), round(age30 * 100), round(age40 * 100), round(age50 * 100)],
             'rate' : [rateAll, round(rate1 * 100), round(rate2 * 100),round(rate3 * 100),round(rate4 * 100),round(rate5 * 100)],
             'satisfied':[satis_all, round((satis_deepfake_detect / satis_all) * 100), round((satis_deepfake_protect / satis_all) * 100), round((satis_fakeaudio_detect / satis_all) * 100)],
             'unsatisfied':[unsatis_all, round((unsatis_service_sec / unsatis_all) * 100), round((unsatis_design / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100)],
             'unsatisfiedReson' :[reason_all, round((reason_service_sec / reason_all) * 100),  round((reason_design / reason_all) * 100), round((reason_service_function / reason_all) * 100), round((reason_information / reason_all) * 100)]
-    })
+        })
+    except:
+        raise nodata_exception
+    
 
 
 @router.post('/userlist/', status_code=status.HTTP_204_NO_CONTENT)
