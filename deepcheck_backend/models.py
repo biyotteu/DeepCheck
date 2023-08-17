@@ -16,6 +16,19 @@ class User(Base):
     permission = Column(Boolean, nullable=True)
 
 
+class Survey(Base):
+    __tablename__ = "survey"
+
+    userid = Column(Integer, primary_key=True, unique=True)
+    email = Column(String, nullable=False)
+    gender = Column(String, nullable=False)
+    age = Column(Integer, nullable=False)
+    rate = Column(Integer, nullable=False)
+    satisfied = Column(String, nullable=False)
+    unsatisfied = Column(String, nullable=False)
+    unsatisfiedReason = Column(String, nullable=True)
+
+
 class Log(Base):
     __tablename__ = "log"
 
