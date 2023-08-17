@@ -35,10 +35,6 @@ headers = {
 }
 
 
-def makeToken(data):
-    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
-
-
 def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(getDB)):
     invalid_exception = HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -106,10 +102,8 @@ def loginForAccessToken(data: OAuth2PasswordRequestForm = Depends(), db: Session
         "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     }
 
-    access_token = makeToken(access_data)
-    refresh_token = makeToken(refresh_data)
-
-    user_crud.setRefreshToken(db, user, refresh_token)
+    access_token = jwt.encode(access_data, SECRET_KEY, algorithm=ALGORITHM)
+    refresh_token = jwt.encode(refresh_data, SECRET_KEY, algorithm=ALGORITHM)
 
     return JSONResponse(status_code=200, headers=headers, content={
         "msg": "Success",
@@ -151,38 +145,50 @@ def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCur
         'msg': 'Success'
     })
 
-
-@router.get('/token/', status_code=status.HTTP_204_NO_CONTENT)
-def verifiyToken(db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser), token: str = Depends(oauth2_scheme)):
-    
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
+@router.post("/survey/", status_code=status.HTTP_204_NO_CONTENT)
+def doSurvey(survey_create: user_schema.SurveyCreate, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
+    testemail="testemail123@naver.com"
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        exp = payload.get("exp")
-        if exp is None or exp < datetime.utcnow():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="refresh token expired")
-    except JWTError:
-        raise credentials_exception
-    else:
-        access_data = {
-            "username": current_user.username,
-            "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        }
-        access_token = makeToken(access_data)
+        user_crud.createSurvey(db=db, survey_create=survey_create, email=testemail)
+        return JSONResponse(status_code=200, headers=headers, content={
+            'msg': 'Success'
+        })
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="데이터를 찾을수 없습니다.")
 
+
+@router.get("/surveyStatus/{email}", status_code=status.HTTP_204_NO_CONTENT)
+def getSurveyStatus(email, db: Session = Depends(getDB)):
+    SurveyInfo = user_crud.getSurveyInfo(db=db, email=email)
+    resmsg = False
+    if(SurveyInfo):
+        resmsg = True
     return JSONResponse(status_code=200, headers=headers, content={
-        "msg": "Success",
-        "access_token": access_token,
-        "token_type": "bearer",
+        'msg': resmsg
     })
 
+  
+@router.get("/SurveyInfo/{email}", status_code=status.HTTP_204_NO_CONTENT)
+def getSurveyInfo(email, db: Session = Depends(getDB)):
+    
+    try:
+        SurveyInfo = user_crud.getSurveyInfo(db=db, email=email)
+        return JSONResponse(status_code=200, headers=headers, content={
+            'email': SurveyInfo.email,
+            'gender': SurveyInfo.gender,
+            'age' : SurveyInfo.age,
+            'rate' : SurveyInfo.rate,
+            'satisfied' : SurveyInfo.satisfied,
+            'unsatisfied' : SurveyInfo.unsatisfied,
+            'unsatisfiedReson' : SurveyInfo.unsatisfiedReson
+        })
+    except:
+        return JSONResponse(status_code=200, headers=headers, content={
+            'msg' : 'no Data'
+        })
 
+    
 @router.post('/userlist/', status_code=status.HTTP_204_NO_CONTENT)
 def getUserList(user_list: user_schema.UserGetListRequest, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
     nodata_exception = HTTPException(
@@ -199,29 +205,3 @@ def getUserList(user_list: user_schema.UserGetListRequest, db: Session = Depends
         })
     except:
         raise nodata_exception
-
-
-# @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
-# @verifyJWT
-# def userUpdate(db: Session, current_user: User, user_update: user_schema.UserUpdate):
-#     db_user = user_crud.getUser(db, username=current_user.username)
-#     if not db_user:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-#                             detail="데이터를 찾을수 없습니다.")
-#     if current_user.id != db_user.id:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-#                             detail="수정 권한이 없습니다.")
-#     user_crud.updateUser(db=db, db_user=db_user, user_update=user_update)
-
-
-# @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
-# @verifyJWT
-# def userDelete(db: Session, current_user: User, user_delete: user_schema.UserDelete):
-#     db_user = user_crud.getUser(db, username=current_user.username)
-#     if not db_user:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-#                             detail="데이터를 찾을수 없습니다.")
-#     if current_user.id != db_user.id:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-#                             detail="삭제 권한이 없습니다.")
-#     user_crud.deleteUser(db=db, db_user=db_user)
