@@ -71,6 +71,24 @@ def logGet(request: log_schema.LogGetListRequest, db: Session = Depends(getDB), 
         })
     except:
         raise nodata_exception
+    
+
+@router.post("/total/", status_code=status.HTTP_204_NO_CONTENT)
+def logCount(request: log_schema.LogCount, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
+    nodata_exception = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="No Data",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        if current_user.permission:
+            loglist = db.query(Log).filter(Log.user_id==request.user_id).all()
+        return JSONResponse(status_code=200, headers=headers, content={
+            "msg": "Success",
+            "logtotal": len(loglist)
+        })
+    except:
+        raise nodata_exception
 
 
 #recommend
