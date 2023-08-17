@@ -1,9 +1,10 @@
 from datetime import timedelta, datetime
-from typing_extensions import Annotated
+from typing import List
 
 from fastapi import APIRouter, HTTPException
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.encoders import jsonable_encoder
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from starlette import status
@@ -51,16 +52,16 @@ def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(ge
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("email")
+        username: str = payload.get("username")
         expired: bool = datetime.utcnow() > datetime.utcfromtimestamp(int(payload.get("exp")))
-        if email is None:
+        if username is None:
             raise invalid_exception
         if expired:
             raise expired_exception
     except JWTError:
         raise invalid_exception
     else:
-        user = user_crud.getUser(db, email=email)
+        user = user_crud.getUser(db, username=username)
         if user is None:
             raise invalid_exception
         return user
@@ -84,9 +85,9 @@ def userCreate(user_create: user_schema.UserCreate, db: Session = Depends(getDB)
 
 
 @router.post("/login/", response_model=user_schema.Token)
-def loginForAccessToken(data: user_schema.Auth, db: Session = Depends(getDB)):
+def loginForAccessToken(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(getDB)):
     # check user and password
-    user = user_crud.getUser(db, data.email)
+    user = user_crud.getUser(db, data.username)
     if not user or not pwd_context.verify(data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -96,12 +97,12 @@ def loginForAccessToken(data: user_schema.Auth, db: Session = Depends(getDB)):
 
     # make access token
     access_data = {
-        "email": user.email,
+        "username": user.username,
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     }
 
     refresh_data = {
-        "sub": user.email,
+        "sub": user.username,
         "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     }
 
@@ -115,14 +116,14 @@ def loginForAccessToken(data: user_schema.Auth, db: Session = Depends(getDB)):
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
-        "email": user.email
+        "username": user.username
     })
 
 
 #recommend
 @router.put("/update/", status_code=status.HTTP_204_NO_CONTENT)
 def userUpdate(user_update: user_schema.UserUpdate, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
-    db_user = user_crud.getUser(db, email=current_user.email)
+    db_user = user_crud.getUser(db, username=current_user.username)
     if not db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="데이터를 찾을수 없습니다.")
@@ -138,7 +139,7 @@ def userUpdate(user_update: user_schema.UserUpdate, db: Session = Depends(getDB)
 #recommend
 @router.delete("/delete/", status_code=status.HTTP_204_NO_CONTENT)
 def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
-    db_user = user_crud.getUser(db, email=current_user.email)
+    db_user = user_crud.getUser(db, username=current_user.username)
     if not db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="데이터를 찾을수 없습니다.")
@@ -170,7 +171,7 @@ def verifiyToken(db: Session = Depends(getDB), current_user: User = Depends(getC
         raise credentials_exception
     else:
         access_data = {
-            "email": current_user.email,
+            "username": current_user.username,
             "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         }
         access_token = makeToken(access_data)
@@ -180,6 +181,24 @@ def verifiyToken(db: Session = Depends(getDB), current_user: User = Depends(getC
         "access_token": access_token,
         "token_type": "bearer",
     })
+
+
+@router.post('/userlist/', status_code=status.HTTP_204_NO_CONTENT)
+def getUserList(user_list: user_schema.UserGetListRequest, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
+    nodata_exception = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="No Data",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        if current_user.permission:
+            userlist = db.query(User).all()[user_list.start:user_list.end]
+        return JSONResponse(status_code=200, headers=headers, content={
+            "msg": "Success",
+            "userlist": jsonable_encoder(userlist)
+        })
+    except:
+        raise nodata_exception
 
 
 # @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
