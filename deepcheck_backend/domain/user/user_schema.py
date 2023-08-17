@@ -4,11 +4,11 @@ from jose import jwt, JWTError
 
 class UserCreate(BaseModel):
     # username: str
-    email: EmailStr
+    username: EmailStr
     password1: str
     password2: str
 
-    @validator('email','password1', 'password2')
+    @validator('username','password1', 'password2')
     def not_empty(cls, v):
         if not v or not v.strip():
             raise ValueError('빈 값은 허용되지 않습니다.')
@@ -25,7 +25,7 @@ class Token(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str
-    email: str
+    username: str
 
 
 class UserUpdate(BaseModel):
@@ -40,7 +40,7 @@ class UserUpdate(BaseModel):
 
 
 class Auth(BaseModel):
-    email: EmailStr
+    username: EmailStr
     password: str
 
 
@@ -52,3 +52,7 @@ class SurveyCreate(BaseModel):
     unsatisfied: str
     unsatisfiedReason: str
 
+
+class UserGetListRequest(BaseModel):
+    start: int
+    end: int
