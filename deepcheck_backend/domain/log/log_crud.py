@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import Log
+from models import Log, User
 
 
 def createLog(db: Session, log_create: dict):
@@ -20,3 +20,7 @@ def getLog(db: Session, id: int):
 def deleteLog(db: Session, db_log: Log):
     db.delete(db_log)
     db.commit()
+
+
+def searchEmail(db: Session, email: str):
+    return db.query(User).filter(User.username.like('%' + email + '%')).all()

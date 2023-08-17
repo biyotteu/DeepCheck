@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator, EmailStr
+from pydantic import BaseModel
 
 
 class LogGet(BaseModel):
@@ -9,3 +9,7 @@ class LogGetListRequest(BaseModel):
     user_id: int
     start: int
     end: int
+
+
+class EmailSearch(BaseModel):
+    email: str
