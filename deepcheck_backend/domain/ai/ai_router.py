@@ -38,9 +38,12 @@ async def audio(file: UploadFile, db: Session = Depends(getDB), current_user: Us
     filename = f"{str(uuid.uuid4())}." + file.filename.split(".")[-1]
     with open(os.path.join(UPLOAD_DIR, filename), "wb") as fp:
         fp.write(content) 
-
-    result = audioDetector.detect(os.path.join(UPLOAD_DIR, filename))
-    os.remove(os.path.join(UPLOAD_DIR, filename))
+    try:
+        result = audioDetector.detect(os.path.join(UPLOAD_DIR, filename))
+        os.remove(os.path.join(UPLOAD_DIR, filename))
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="잘못된 접근입니다")
 
     log_create = {
         "user_id": current_user.id,
@@ -56,7 +59,7 @@ async def audio(file: UploadFile, db: Session = Depends(getDB), current_user: Us
 
 # cross_efficientnet_vit
 @router.post("/image/")
-async def audio(file: UploadFile, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
+async def image(file: UploadFile, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
     folder_id = str(uuid.uuid1())
     UPLOAD_DIR = "../tmp/image/"+folder_id
     os.mkdir(UPLOAD_DIR)
@@ -65,7 +68,12 @@ async def audio(file: UploadFile, db: Session = Depends(getDB), current_user: Us
 
     with open(filename, "wb") as fp:
         fp.write(content)
-    result = deepfakeDetector.detect_image(folder_id,filename)
+    
+    try:
+        result = deepfakeDetector.detect_image(folder_id,filename)
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="잘못된 접근입니다")
 
     filelist = os.listdir(UPLOAD_DIR)
     filelist.remove('faces')
@@ -84,7 +92,7 @@ async def audio(file: UploadFile, db: Session = Depends(getDB), current_user: Us
 
 # icpr2020dfdc
 @router.post("/image2/")
-async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
+async def image2(file: UploadFile, current_user: User = Depends(getCurrentUser)):
     UPLOAD_DIR = "../tmp/image"
     content = await file.read()
     filename = f"{str(uuid.uuid4())}." + file.filename.split(".")[-1]
@@ -92,8 +100,13 @@ async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
     with open(os.path.join(UPLOAD_DIR, filename), "wb") as fp:
         fp.write(content) 
 
-    result = deepfakeDetector2.detect_image(os.path.join(UPLOAD_DIR, filename))
-    os.remove(os.path.join(UPLOAD_DIR, filename))
+    try:
+        result = deepfakeDetector2.detect_image(os.path.join(UPLOAD_DIR, filename))
+        os.remove(os.path.join(UPLOAD_DIR, filename))
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="잘못된 접근입니다")
+    
     return result
 
 @router.post("/imagesFromUrls/")
@@ -103,7 +116,7 @@ async def images_from_urls(data:Dict[Any, Any], current_user: User = Depends(get
 
 # watermark
 @router.post("/watermark/")
-async def audio(file: UploadFile, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
+async def watermark(file: UploadFile, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
     folder_id = str(uuid.uuid1())
     UPLOAD_DIR = "../tmp/image/"+folder_id
     os.mkdir(UPLOAD_DIR)
