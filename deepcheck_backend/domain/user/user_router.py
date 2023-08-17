@@ -176,7 +176,7 @@ def getSurveyInfo(db: Session = Depends(getDB),  current_user: User = Depends(ge
         detail="No Data",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    if not current_user.permission:
+    if current_user.permission:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="접근 권한이 없습니다.")
  
@@ -218,45 +218,22 @@ def getSurveyInfo(db: Session = Depends(getDB),  current_user: User = Depends(ge
     try:
         return JSONResponse(status_code=200, headers=headers, content={
             "gender": {
-                "all": genderAll,
-                "M": round(genderMale * 100),
-                "F":round(genderFemale * 100)
+                [genderAll, round(genderMale * 100), round(genderFemale * 100)]
             },
             "age" : {
-                "all": ageAll,
-                "10": round(age10 * 100),
-                "20": round(age20 * 100),
-                "30": round(age30 * 100),
-                "40": round(age40 * 100),
-                "50": round(age50 * 100)
+                [ageAll, round(age10 * 100), round(age20 * 100), round(age30 * 100), round(age40 * 100), round(age50 * 100)]
             },
             'rate' : {
-                "all": rateAll,
-                "1": round(rate1 * 100),
-                "2": round(rate2 * 100),
-                "3": round(rate3 * 100),
-                "4": round(rate4 * 100),
-                "5": round(rate5 * 100)
+                [rateAll, round(rate1 * 100), round(rate2 * 100),round(rate3 * 100),round(rate4 * 100),round(rate5 * 100)]
             },
             'satisfied' : {
-                "all" : satis_all,
-                "deepfake_detect": round((satis_deepfake_detect / satis_all) * 100),
-                "deepfake_protect": round((satis_deepfake_protect / satis_all) * 100),
-                "fakeaudio_detect": round((satis_fakeaudio_detect / satis_all) * 100)
+                [satis_all, round((satis_deepfake_detect / satis_all) * 100), round((satis_deepfake_protect / satis_all) * 100), round((satis_fakeaudio_detect / satis_all) * 100)]
             },
             'unsatisfied' : {
-                "all": unsatis_all,
-                "unsatis_service_sec": round((unsatis_service_sec / unsatis_all) * 100),
-                "unsatis_design": round((unsatis_design / unsatis_all) * 100),
-                "unsatis_service_function": round((unsatis_service_function / unsatis_all) * 100),
-                "unsatis_information": round((unsatis_service_function / unsatis_all) * 100)
+                [unsatis_all, round((unsatis_service_sec / unsatis_all) * 100), round((unsatis_design / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100), round((unsatis_service_function / unsatis_all) * 100)]
             },
             'unsatisfiedReson' : {
-                "all": reason_all,
-                "reason_service_sec": round((reason_service_sec / reason_all) * 100),
-                "reason_design": round((reason_design / reason_all) * 100),
-                "reason_service_function": round((reason_service_function / reason_all) * 100),
-                "reason_information": round((reason_information / reason_all) * 100)
+                [reason_all, round((reason_service_sec / reason_all) * 100),  round((reason_design / reason_all) * 100), round((reason_service_function / reason_all) * 100), round((reason_information / reason_all) * 100)]
             }
         })
     except:
