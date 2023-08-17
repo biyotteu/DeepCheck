@@ -1,7 +1,4 @@
 *.zip
-*.png
-*.jpg
-*.jpeg
 *.pth
 *.npy
 *.ckpt
@@ -10,5 +7,7 @@
 *.tar.gz
 *.pem
 nohup.out
-
+tmp
+deepcheck_backend/lib/watermark/stargan/data
+deepcheck_backend/lib/watermark/demo_results
 info.log
