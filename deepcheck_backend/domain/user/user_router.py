@@ -34,10 +34,6 @@ headers = {
 }
 
 
-def makeToken(data):
-    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
-
-
 def getCurrentUser(token: str = Depends(oauth2_scheme), db: Session = Depends(getDB)):
     invalid_exception = HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -105,8 +101,8 @@ def loginForAccessToken(data: user_schema.Auth, db: Session = Depends(getDB)):
         "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     }
 
-    access_token = makeToken(access_data)
-    refresh_token = makeToken(refresh_data)
+    access_token = jwt.encode(access_data, SECRET_KEY, algorithm=ALGORITHM)
+    refresh_token = jwt.encode(refresh_data, SECRET_KEY, algorithm=ALGORITHM)
 
     user_crud.setRefreshToken(db, user, refresh_token)
 
@@ -148,37 +144,6 @@ def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCur
     user_crud.deleteUser(db=db, db_user=db_user)
     return JSONResponse(status_code=200, headers=headers, content={
         'msg': 'Success'
-    })
-
-
-@router.get('/token/', status_code=status.HTTP_204_NO_CONTENT)
-def verifiyToken(db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser), token: str = Depends(oauth2_scheme)):
-    
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        exp = payload.get("exp")
-        if exp is None or exp < datetime.utcnow():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="refresh token expired")
-    except JWTError:
-        raise credentials_exception
-    else:
-        access_data = {
-            "email": current_user.email,
-            "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        }
-        access_token = makeToken(access_data)
-
-    return JSONResponse(status_code=200, headers=headers, content={
-        "msg": "Success",
-        "access_token": access_token,
-        "token_type": "bearer",
     })
 
 
