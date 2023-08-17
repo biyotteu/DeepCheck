@@ -24,7 +24,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 REFRESH_TOKEN_EXPIRE_DAYS = 7 
 SECRET_KEY = getJsonValue("SECRET")
 ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login/")
 
 router = APIRouter(
     prefix="/api/user",
