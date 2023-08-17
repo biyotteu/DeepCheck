@@ -24,8 +24,8 @@ function App() {
       <ReviewModal />
       <Header />
       {/* <Review /> */}
-      {/* <UserManagement /> */}
-      <Routes>
+      <UserManagement />
+      {/* <Routes>
         <Route path="/" element={<Home />} />
         <Route
           path="/deepfake"
@@ -71,12 +71,11 @@ function App() {
           path="/surveyresult"
           element={
             <ProtectAdminRoute>
-              {/*여기에 설문 결과 컴포넌트*/}
               <UserManagement />
             </ProtectAdminRoute>
           }
         />
-      </Routes>
+      </Routes> */}
       {/* 리뷰 했는지 안했는지 검증 필요 */}
       {/* admin page 권한 확인*/}
       <ToastContainer

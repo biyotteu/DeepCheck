@@ -8,7 +8,7 @@ function ProtectReviewRoute({ children }: { children: JSX.Element }) {
   const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
     http
-      .get("/user/ㅑㄴ녁ㅍ됴/")
+      .get("/user/survey/")
       .then((response) => {
         setIsAdmin(true);
       })
