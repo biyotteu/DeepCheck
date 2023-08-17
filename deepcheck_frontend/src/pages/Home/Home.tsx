@@ -70,7 +70,7 @@ function Home() {
                 <Allow className="arrow" />
               </div>
             </Link>
-            <Link to="/preventdeepfake" className="card">
+            <Link to="/watermark" className="card">
               <img
                 src="/assets/icons/image_alt.svg"
                 alt="deepfake 방지"

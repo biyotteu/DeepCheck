@@ -33,7 +33,7 @@ header {
       gap: 16px;
       position: relative;
       // margin-bottom: 50px;
-      a {
+      .card-menu  {
         width: 139px;
         height: 80px;
         box-sizing: border-box;
@@ -47,6 +47,7 @@ header {
         border-bottom: 4px solid #fff;
         padding-top: 4px;
         z-index: 100001;
+        cursor: pointer;
       }
       .active {
         border-bottom: 4px solid #5362f6;
@@ -159,6 +160,7 @@ header {
     text-decoration: none;
     padding: 9px 20px;
     border-radius: 12px;
+    cursor: pointer;
   }
   .active {
     color: #5362f6;
@@ -180,6 +182,7 @@ header {
     padding: 9px 20px;
     font-size: 18px;
     font-weight: 600;
+    cursor: pointer;
   }
   .login:hover {
     color: rgba(83, 98, 246, 1);
@@ -191,6 +194,7 @@ header {
     background-color: #5362f6;
     color: #fff;
     border-radius: 12px;
+    cursor: pointer;
   }
   .register:hover {
     background-color: #4025e5;
