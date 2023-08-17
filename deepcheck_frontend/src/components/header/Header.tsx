@@ -29,8 +29,6 @@ function Header() {
   const passwordCheck = (password: string) => {
     // if (!passwordRegEx.test(password)) {
     if (password.match(passwordRegEx) === null) {
-      console.log(password, "@@@@");
-      console.log(passwordRegEx.test(password));
       toast.error("비밀번호 형식을 확인해주세요", { containerId: "login" });
       return false;
     } else {
@@ -39,7 +37,6 @@ function Header() {
   };
   const passwordDoubleCheck = (password: string, passwordChk: string) => {
     if (password !== passwordChk) {
-      console.log("#####");
       toast.error("비밀번호가 다릅니다.", { containerId: "login" });
       return false;
     } else {
@@ -172,11 +169,11 @@ function Header() {
                         )
                           return;
                         try {
-                          // const { data } = await http.post("/user/create/", {
-                          //   email: user.email,
-                          //   password1: user.password,
-                          //   password2: user.passwordCheck,
-                          // });
+                          const { data } = await http.post("/user/create/", {
+                            email: user.email,
+                            password1: user.password,
+                            password2: user.passwordCheck,
+                          });
 
                           setOverlay(false);
                           toast("회원가입 성공!\n로그인 해주세요!");

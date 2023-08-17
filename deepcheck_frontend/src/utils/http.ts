@@ -26,7 +26,7 @@ http.interceptors.response.use(
     const { config, response } = error;
     // console.log(response);
     // if (status === 401) {
-    if (response && response.data && response.data.code === 5103) {
+    if (response && response.data && response.data.code === 401) {
       const originalRequest = config;
       const refreshToken = getRefreshToken();
       // token refresh 요청
@@ -37,7 +37,7 @@ http.interceptors.response.use(
         }
       );
       // 새로운 토큰 저장
-      const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+      const { access_token: newAccessToken, refresh_token: newRefreshToken } =
         data;
 
       setToken("ACCESS_TOKEN", newAccessToken);
