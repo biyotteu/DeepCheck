@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from domain.user.user_schema import UserCreate, UserUpdate
-from models import User
+from domain.user.user_schema import UserCreate, UserUpdate, SurveyCreate
+from models import User, Survey
 import re
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -48,8 +48,12 @@ def deleteUser(db: Session, db_user: User):
     db.commit()
 
 
-def setRefreshToken(db: Session, db_user: User, refresh_token: str):
-    db_user.refresh_token = refresh_token  # 리프레시 토큰 저장
-    db.add(db_user)
+def createSurvey(db: Session, survey_create: SurveyCreate, email: str):
+    survey_info = Survey(email=email, gender=survey_create.gender, age=survey_create.age, rate=survey_create.rate, satisfied=survey_create.satisfied, unsatisfied=survey_create.unsatisfied, unsatisfiedReason = survey_create.unsatisfiedReason)
+    print(survey_info)
+    db.add(survey_info)
     db.commit()
+
+def getSurveyInfo(db: Session, email: str):
+    return db.query(Survey).filter(Survey.email == email).first()
 

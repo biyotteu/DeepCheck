@@ -44,6 +44,15 @@ class Auth(BaseModel):
     password: str
 
 
+class SurveyCreate(BaseModel):
+    gender: str
+    age: int
+    rate: int
+    satisfied: str
+    unsatisfied: str
+    unsatisfiedReason: str
+
+
 class UserGetListRequest(BaseModel):
     start: int
     end: int
