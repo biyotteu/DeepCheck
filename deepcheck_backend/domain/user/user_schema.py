@@ -42,3 +42,13 @@ class UserUpdate(BaseModel):
 class Auth(BaseModel):
     email: EmailStr
     password: str
+
+
+class SurveyCreate(BaseModel):
+    gender: str
+    age: int
+    rate: int
+    satisfied: str
+    unsatisfied: str
+    unsatisfiedReason: str
+

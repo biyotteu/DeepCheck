@@ -104,8 +104,6 @@ def loginForAccessToken(data: user_schema.Auth, db: Session = Depends(getDB)):
     access_token = jwt.encode(access_data, SECRET_KEY, algorithm=ALGORITHM)
     refresh_token = jwt.encode(refresh_data, SECRET_KEY, algorithm=ALGORITHM)
 
-    user_crud.setRefreshToken(db, user, refresh_token)
-
     return JSONResponse(status_code=200, headers=headers, content={
         "msg": "Success",
         "access_token": access_token,
@@ -146,28 +144,47 @@ def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCur
         'msg': 'Success'
     })
 
+@router.post("/survey/", status_code=status.HTTP_204_NO_CONTENT)
+def doSurvey(survey_create: user_schema.SurveyCreate, db: Session = Depends(getDB)): #current_user: User = Depends(getCurrentUser)
+    testemail="testemail123@naver.com"
+    try:
+        user_crud.createSurvey(db=db, survey_create=survey_create, email=testemail)
+        return JSONResponse(status_code=200, headers=headers, content={
+            'msg': 'Success'
+        })
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="데이터를 찾을수 없습니다.")
 
-# @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
-# @verifyJWT
-# def userUpdate(db: Session, current_user: User, user_update: user_schema.UserUpdate):
-#     db_user = user_crud.getUser(db, username=current_user.username)
-#     if not db_user:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-#                             detail="데이터를 찾을수 없습니다.")
-#     if current_user.id != db_user.id:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-#                             detail="수정 권한이 없습니다.")
-#     user_crud.updateUser(db=db, db_user=db_user, user_update=user_update)
 
+@router.get("/surveyStatus/{email}", status_code=status.HTTP_204_NO_CONTENT)
+def getSurveyInfo(email, db: Session = Depends(getDB)):
+    SurveyInfo = user_crud.getSurveyInfo(db=db, email=email)
+    resmsg = False
+    if(SurveyInfo):
+        resmsg = True
+    return JSONResponse(status_code=200, headers=headers, content={
+        'msg': resmsg
+    })
 
-# @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
-# @verifyJWT
-# def userDelete(db: Session, current_user: User, user_delete: user_schema.UserDelete):
-#     db_user = user_crud.getUser(db, username=current_user.username)
-#     if not db_user:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-#                             detail="데이터를 찾을수 없습니다.")
-#     if current_user.id != db_user.id:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-#                             detail="삭제 권한이 없습니다.")
-#     user_crud.deleteUser(db=db, db_user=db_user)
+@router.get("/SurveyInfo/{email}", status_code=status.HTTP_204_NO_CONTENT)
+def getSurveyInfo(email, db: Session = Depends(getDB)):
+    
+    try:
+        SurveyInfo = user_crud.getSurveyInfo(db=db, email=email)
+        return JSONResponse(status_code=200, headers=headers, content={
+            'email': SurveyInfo.email,
+            'gender': SurveyInfo.gender,
+            'age' : SurveyInfo.age,
+            'rate' : SurveyInfo.rate,
+            'satisfied' : SurveyInfo.satisfied,
+            'unsatisfied' : SurveyInfo.unsatisfied,
+            'unsatisfiedReson' : SurveyInfo.unsatisfiedReson
+        })
+    except:
+        return JSONResponse(status_code=200, headers=headers, content={
+            'msg' : 'no Data'
+        })
+
+    
+
