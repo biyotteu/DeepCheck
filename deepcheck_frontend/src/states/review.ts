@@ -1,5 +1,6 @@
 import { atom, selector } from "recoil";
 import http from "../utils/http";
+import { userSelector } from "./token";
 
 const reviewModalAtom = atom({
   key: "reviewModalAtom",
@@ -10,17 +11,18 @@ export const reviewSelector = selector({
   get: ({ get }: any) => {
     return get(reviewModalAtom);
   },
-  set: ({ set }, newData) => {
-    if (newData) {
-      http.get("/user/review/").then((res) => {
-        if (res.data.detail) {
-          set(reviewModalAtom, false);
-        } else {
-          set(reviewModalAtom, true);
-        }
-      });
-    } else {
-      set(reviewModalAtom, false);
-    }
+  set: ({ get, set }, newData) => {
+    set(reviewModalAtom, newData);
+    // if (newData) {
+    //   http.get("/user/surveyStatus/" + get(userSelector)?.email).then((res) => {
+    //     if (res.data.detail) {
+    //       set(reviewModalAtom, false);
+    //     } else {
+    //       set(reviewModalAtom, true);
+    //     }
+    //   });
+    // } else {
+    //   set(reviewModalAtom, false);
+    // }
   },
 });

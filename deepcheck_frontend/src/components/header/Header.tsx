@@ -266,7 +266,7 @@ function Header() {
                       <Link to="/usermanage" className="admin-menu">
                         사용자 관리
                       </Link>
-                      <Link to="/usermanage" className="admin-menu">
+                      <Link to="/surveyresult" className="admin-menu">
                         리뷰 결과
                       </Link>
                     </div>

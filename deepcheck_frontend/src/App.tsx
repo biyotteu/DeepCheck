@@ -73,7 +73,7 @@ function App() {
           path="/surveyresult"
           element={
             <ProtectAdminRoute>
-              <UserManagement />
+              <Survery />
             </ProtectAdminRoute>
           }
         />

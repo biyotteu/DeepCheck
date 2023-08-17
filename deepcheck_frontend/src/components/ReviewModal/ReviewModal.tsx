@@ -1,8 +1,10 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import "./ReviewModal.scss";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { reviewSelector } from "../../states/review";
 import { Link } from "react-router-dom";
+import http from "../../utils/http";
+import { userSelector } from "../../states/token";
 
 // type ReviewModalProps = {
 //   visible: boolean;
@@ -11,6 +13,18 @@ import { Link } from "react-router-dom";
 
 function ReviewModal() {
   const [visible, setVisible] = useRecoilState(reviewSelector);
+  const userInfo = useRecoilValue(userSelector);
+  useEffect(() => {
+    const check = async () => {
+      http.get("/user/surveyStatus/" + userInfo?.email).then((res) => {
+        if (res.data.detail) {
+          setVisible(false);
+        } else {
+          setVisible(true);
+        }
+      });
+    };
+  }, []);
   return (
     <div
       className="review-modal"

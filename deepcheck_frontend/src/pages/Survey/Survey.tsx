@@ -15,22 +15,36 @@ type Survey = {
   unsatisfiedReson: [];
 };
 function Survey() {
+  const colors = [
+    "rgba(70, 42, 241, 1)",
+    "rgba(83, 98, 246, 1)",
+    "rgba(118, 129, 248, 1)",
+    "rgba(160, 165, 250, 1)",
+    "rgba(160, 165, 250, 1)",
+  ];
   const [index, setIndex] = useState(1);
-  const [datas, setDatas] = useState([[], [], [], [], [], []]);
+  const [datas, setDatas] = useState([
+    [30, 40, 60],
+    [20, 20, 20, 20, 20, 20],
+    [],
+    [],
+    [],
+    [],
+  ]);
   useEffect(() => {
     const getSurvey = async () => {
       try {
-        const { data }: { data: Survey } = await http.get(
-          "/user/getAllSurveyRes/"
-        );
-        setDatas([
-          data.gender,
-          data.age,
-          data.rate,
-          data.satisfied,
-          data.unsatisfied,
-          data.unsatisfiedReson,
-        ]);
+        // const { data }: { data: Survey } = await http.get(
+        //   "/user/getAllSurveyRes/"
+        // );
+        // setDatas([
+        //   data.gender,
+        //   data.age,
+        //   data.rate,
+        //   data.satisfied,
+        //   data.unsatisfied,
+        //   data.unsatisfiedReson,
+        // ]);
       } catch (err) {}
     };
     getSurvey();
@@ -47,34 +61,20 @@ function Survey() {
             <div className="question-title">
               <img src="/assets/icons/message.svg" />
               {questions.questions[index - 1].title}
-              <div className="response-count"></div>
+              <div className="response-count">{datas[index - 1][0]}개</div>
             </div>
             <Chart
               options={{
                 chart: {
-                  width: 500,
-                  height: 500,
+                  width: 1000,
+                  height: 1000,
                 },
-                plotOptions: {
-                  radialBar: {
-                    hollow: {
-                      size: "65%",
-                    },
-                    track: {
-                      background: "#E9EBEE",
-                    },
-                    dataLabels: {
-                      name: {
-                        show: false,
-                      },
-                      value: {
-                        show: false,
-                      },
-                    },
-                  },
+                legend: {
+                  show: false,
                 },
+                plotOptions: {},
                 stroke: {
-                  lineCap: "round",
+                  //   lineCap: "round",
                 },
                 fill: {
                   colors: [
@@ -86,8 +86,9 @@ function Survey() {
                   ],
                 },
               }}
-              series={datas[index].slice(1, datas[index].length)}
+              series={datas[index - 1].slice(1, datas[index - 1].length)}
               type="pie"
+              width={500}
             />
           </div>
           <div className="pagenation-wrap">
