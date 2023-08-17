@@ -11,7 +11,7 @@ from starlette.exceptions import HTTPException
 from database import getDB
 from domain.ai import ai_schema, ai_crud
 from domain.user.user_router import getCurrentUser
-from domain.log.log_router import createLog
+from domain.log.log_crud import createLog
 from models import User
 
 from lib.fake_audio_detection.audio_fake_detector import AudioFakeDetector
@@ -32,7 +32,7 @@ router = APIRouter(
 )
 
 @router.post("/audio/")
-async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
+async def audio(file: UploadFile, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
     UPLOAD_DIR = "../tmp/audio"
     content = await file.read()
     filename = f"{str(uuid.uuid4())}." + file.filename.split(".")[-1]
@@ -47,16 +47,16 @@ async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
         "uuid": filename,
         "endpoint": "/api/ai/image/",
         "path": "https://deepcheck.site/tmp/audio/",
-        "filelist": [filename],
+        "filelist": str([filename]),
         "score": result["score"]
     }
-    createLog(log_create=log_create)
+    createLog(db=db, log_create=log_create)
 
     return result
 
 # cross_efficientnet_vit
 @router.post("/image/")
-async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
+async def audio(file: UploadFile, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
     folder_id = str(uuid.uuid1())
     UPLOAD_DIR = "../tmp/image/"+folder_id
     os.mkdir(UPLOAD_DIR)
@@ -68,15 +68,17 @@ async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
     result = deepfakeDetector.detect_image(folder_id,filename)
 
     filelist = os.listdir(UPLOAD_DIR)
+    filelist.remove('faces')
+    filelist += os.listdir(UPLOAD_DIR + "/faces")
     log_create = {
         "user_id": current_user.id,
         "uuid": folder_id,
         "endpoint": "/api/ai/image/",
         "path": "https://deepcheck.site/tmp/image/"+folder_id,
-        "filelist": filelist,
+        "filelist": str(filelist),
         "score": result["score"]
     }
-    createLog(log_create=log_create)
+    createLog(db=db, log_create=log_create)
 
     return result
 
@@ -101,7 +103,7 @@ async def images_from_urls(data:Dict[Any, Any], current_user: User = Depends(get
 
 # watermark
 @router.post("/watermark/")
-async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
+async def audio(file: UploadFile, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
     folder_id = str(uuid.uuid1())
     UPLOAD_DIR = "../tmp/image/"+folder_id
     os.mkdir(UPLOAD_DIR)
@@ -115,12 +117,12 @@ async def audio(file: UploadFile, current_user: User = Depends(getCurrentUser)):
     log_create = {
         "user_id": current_user.id,
         "uuid": folder_id,
-        "endpoint": "/api/ai/image/",
+        "endpoint": "/api/ai/watermark/",
         "path": "https://deepcheck.site/tmp/image/"+folder_id,
-        "filelist": filelist,
+        "filelist": str(filelist),
         "score": None
     }
-    createLog(log_create=log_create)
+    createLog(db=db, log_create=log_create)
 
     return watermark.process(filename, folder_id)
 

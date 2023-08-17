@@ -48,11 +48,24 @@ class SurveyCreate(BaseModel):
     gender: str
     age: int
     rate: int
-    satisfied: str
-    unsatisfied: str
-    unsatisfiedReason: str
+    
+    deepfake_detect: int
+    deepfake_protect: int
+    fakeaudio_detect: int
+
+    service_sec_1: int
+    design_1: int
+    service_function_1: int
+    information_1: int
+
+    service_sec_2: int
+    design_2: int
+    service_function_2: int
+    information_2: int
+
 
 
 class UserGetListRequest(BaseModel):
     start: int
     end: int
+

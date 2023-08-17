@@ -8,6 +8,8 @@ import FaceGrid from "../../components/FaceGrid/FaceGrid";
 import Button from "../../components/button/button";
 import { toast } from "react-toastify";
 import { saveAs } from "file-saver";
+import { useSetRecoilState } from "recoil";
+import { reviewSelector } from "../../states/review";
 
 type Gan = {
   origin: string;
@@ -35,6 +37,8 @@ type WatermarkResponse = {
 };
 type GanType = "AttGAN" | "StarGAN" | "AttentionGAN" | "HiSD";
 function Watermark() {
+  const setReviewModal = useSetRecoilState(reviewSelector);
+
   const ganKey: GanType[] = ["AttGAN", "StarGAN", "AttentionGAN", "HiSD"];
   const [faceIdx, setFaceIdx] = React.useState(0);
   const [ganIdx, setGanIdx] = React.useState(0);
@@ -97,6 +101,7 @@ function Watermark() {
       return;
     }
     saveAs(result.watermark, "watermark.jpg");
+    setReviewModal(true);
   };
   return (
     <div className="watermark">

@@ -13,7 +13,7 @@ from starlette.responses import JSONResponse
 from database import getDB
 from domain.user import user_crud, user_schema
 from domain.user.user_crud import pwd_context
-from models import User
+from models import User, Survey
 
 from lib.jsonparser import getJsonValue
 # from middleware.jwt import verifyJWT
@@ -24,7 +24,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 REFRESH_TOKEN_EXPIRE_DAYS = 7 
 SECRET_KEY = getJsonValue("SECRET")
 ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login/")
 
 router = APIRouter(
     prefix="/api/user",
@@ -94,12 +94,14 @@ def loginForAccessToken(data: OAuth2PasswordRequestForm = Depends(), db: Session
     # make access token
     access_data = {
         "username": user.username,
-        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        "permission": user.permission
     }
 
     refresh_data = {
         "sub": user.username,
-        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+        "permission": user.permission
     }
 
     access_token = jwt.encode(access_data, SECRET_KEY, algorithm=ALGORITHM)
@@ -129,7 +131,6 @@ def userUpdate(user_update: user_schema.UserUpdate, db: Session = Depends(getDB)
         'msg': 'Success'
     })
 
-
 #recommend
 @router.delete("/delete/", status_code=status.HTTP_204_NO_CONTENT)
 def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
@@ -146,10 +147,10 @@ def userDelete(db: Session = Depends(getDB), current_user: User = Depends(getCur
     })
 
 @router.post("/survey/", status_code=status.HTTP_204_NO_CONTENT)
-def doSurvey(survey_create: user_schema.SurveyCreate, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
-    testemail="testemail123@naver.com"
+def doSurvey(survey_create: user_schema.SurveyCreate, db: Session = Depends(getDB), 
+            current_user: User = Depends(getCurrentUser)):
     try:
-        user_crud.createSurvey(db=db, survey_create=survey_create, email=testemail)
+        user_crud.createSurvey(db=db, survey_create=survey_create, username=current_user.username)
         return JSONResponse(status_code=200, headers=headers, content={
             'msg': 'Success'
         })
@@ -158,37 +159,110 @@ def doSurvey(survey_create: user_schema.SurveyCreate, db: Session = Depends(getD
                             detail="데이터를 찾을수 없습니다.")
 
 
-@router.get("/surveyStatus/{email}", status_code=status.HTTP_204_NO_CONTENT)
-def getSurveyStatus(email, db: Session = Depends(getDB)):
-    SurveyInfo = user_crud.getSurveyInfo(db=db, email=email)
-    resmsg = False
+@router.get("/surveyStatus/{username}", status_code=status.HTTP_204_NO_CONTENT)
+def getSurveyStatus(username, db: Session = Depends(getDB)):
+    SurveyInfo = user_crud.getSurveyInfo(db=db, username=username)
+    resMsg = False
     if(SurveyInfo):
-        resmsg = True
+        resMsg = True
     return JSONResponse(status_code=200, headers=headers, content={
-        'msg': resmsg
+        'msg': resMsg
     })
 
-  
-@router.get("/SurveyInfo/{email}", status_code=status.HTTP_204_NO_CONTENT)
-def getSurveyInfo(email, db: Session = Depends(getDB)):
+@router.get("/getAllSurveyRes/", status_code=status.HTTP_204_NO_CONTENT)
+def getSurveyInfo(db: Session = Depends(getDB),  current_user: User = Depends(getCurrentUser)):
+    nodata_exception = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="No Data",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    if not current_user.permission:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="접근 권한이 없습니다.")
+ 
+    genderAll = db.query(Survey.gender).count()
+    genderMale = db.query(Survey).filter(Survey.gender == "M").count() / genderAll
+    genderFemale = db.query(Survey).filter(Survey.gender == "F").count() / genderAll
+
+    ageAll = db.query(Survey.age).count()
+    age10 = db.query(Survey).filter(Survey.age == 10).count() / ageAll
+    age20 = db.query(Survey).filter(Survey.age == 20).count() / ageAll
+    age30 = db.query(Survey).filter(Survey.age == 30).count() / ageAll
+    age40 = db.query(Survey).filter(Survey.age == 40).count() / ageAll
+    age50 = db.query(Survey).filter(Survey.age == 50).count() / ageAll
+
+    rateAll = db.query(Survey.rate).count()
+    rate1 = db.query(Survey).filter(Survey.rate == 1).count() / rateAll
+    rate2 = db.query(Survey).filter(Survey.rate == 2).count() / rateAll
+    rate3 = db.query(Survey).filter(Survey.rate == 3).count() / rateAll
+    rate4 = db.query(Survey).filter(Survey.rate == 4).count() / rateAll
+    rate5 = db.query(Survey).filter(Survey.rate == 5).count() / rateAll
+
+    satis_deepfake_detect = db.query(Survey).filter(Survey.deepfake_detect == 1).count()
+    satis_deepfake_protect = db.query(Survey).filter(Survey.deepfake_protect == 1).count()
+    satis_fakeaudio_detect = db.query(Survey).filter(Survey.fakeaudio_detect == 1).count()
+    satis_all = satis_deepfake_detect + satis_deepfake_protect + satis_fakeaudio_detect
     
+    unsatis_service_sec = db.query(Survey).filter(Survey.service_sec_1 == 1).count()
+    unsatis_design = db.query(Survey).filter(Survey.design_1 == 1).count()
+    unsatis_service_function = db.query(Survey).filter(Survey.service_function_1 == 1).count()
+    unsatis_information = db.query(Survey).filter(Survey.information_1 == 1).count()
+    unsatis_all = unsatis_service_sec + unsatis_design + unsatis_service_function + unsatis_information
+
+    reason_service_sec = db.query(Survey).filter(Survey.service_sec_2 == 1).count()
+    reason_design = db.query(Survey).filter(Survey.design_2 == 1).count()
+    reason_service_function = db.query(Survey).filter(Survey.service_function_2 == 1).count()
+    reason_information = db.query(Survey).filter(Survey.information_2 == 1).count()
+    reason_all = reason_service_sec + reason_design + reason_service_function + reason_information
+
     try:
-        SurveyInfo = user_crud.getSurveyInfo(db=db, email=email)
         return JSONResponse(status_code=200, headers=headers, content={
-            'email': SurveyInfo.email,
-            'gender': SurveyInfo.gender,
-            'age' : SurveyInfo.age,
-            'rate' : SurveyInfo.rate,
-            'satisfied' : SurveyInfo.satisfied,
-            'unsatisfied' : SurveyInfo.unsatisfied,
-            'unsatisfiedReson' : SurveyInfo.unsatisfiedReson
+            "gender": {
+                "all": genderAll,
+                "M": round(genderMale * 100),
+                "F":round(genderFemale * 100)
+            },
+            "age" : {
+                "all": ageAll,
+                "10": round(age10 * 100),
+                "20": round(age20 * 100),
+                "30": round(age30 * 100),
+                "40": round(age40 * 100),
+                "50": round(age50 * 100)
+            },
+            'rate' : {
+                "all": rateAll,
+                "1": round(rate1 * 100),
+                "2": round(rate2 * 100),
+                "3": round(rate3 * 100),
+                "4": round(rate4 * 100),
+                "5": round(rate5 * 100)
+            },
+            'satisfied' : {
+                "all" : satis_all,
+                "deepfake_detect": round((satis_deepfake_detect / satis_all) * 100),
+                "deepfake_protect": round((satis_deepfake_protect / satis_all) * 100),
+                "fakeaudio_detect": round((satis_fakeaudio_detect / satis_all) * 100)
+            },
+            'unsatisfied' : {
+                "all": unsatis_all,
+                "unsatis_service_sec": round((unsatis_service_sec / unsatis_all) * 100),
+                "unsatis_design": round((unsatis_design / unsatis_all) * 100),
+                "unsatis_service_function": round((unsatis_service_function / unsatis_all) * 100),
+                "unsatis_information": round((unsatis_service_function / unsatis_all) * 100)
+            },
+            'unsatisfiedReson' : {
+                "all": reason_all,
+                "reason_service_sec": round((reason_service_sec / reason_all) * 100),
+                "reason_design": round((reason_design / reason_all) * 100),
+                "reason_service_function": round((reason_service_function / reason_all) * 100),
+                "reason_information": round((reason_information / reason_all) * 100)
+            }
         })
     except:
-        return JSONResponse(status_code=200, headers=headers, content={
-            'msg' : 'no Data'
-        })
+        raise nodata_exception
 
-    
+
 @router.post('/userlist/', status_code=status.HTTP_204_NO_CONTENT)
 def getUserList(user_list: user_schema.UserGetListRequest, db: Session = Depends(getDB), current_user: User = Depends(getCurrentUser)):
     nodata_exception = HTTPException(
@@ -196,9 +270,12 @@ def getUserList(user_list: user_schema.UserGetListRequest, db: Session = Depends
         detail="No Data",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    if not current_user.permission:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="접근 권한이 없습니다.")
+    
     try:
-        if current_user.permission:
-            userlist = db.query(User).all()[user_list.start:user_list.end]
+        userlist = db.query(User).all()[user_list.start:user_list.end]
         return JSONResponse(status_code=200, headers=headers, content={
             "msg": "Success",
             "userlist": jsonable_encoder(userlist)
