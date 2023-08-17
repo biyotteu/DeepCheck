@@ -3,7 +3,7 @@ import Wrap from "../../components/wrap/Wrap";
 import "./UserManagement.scss";
 import ReactPaginate from "react-paginate";
 import http from "../../utils/http";
-import { ReactComponent as EmployeeCard } from "./employee_card.svg";
+import { ReactComponent as EmployeeCard } from "./employee.svg";
 function LogPage({ userEmail }: any) {
   const [logs, setLogs] = useState([
     {
@@ -18,8 +18,7 @@ function LogPage({ userEmail }: any) {
       </div>
       <div className="user-search">
         <button className="search-button">
-          {/* <EmployeeCard /> */}
-          <img src="/assets/icons/employee_card.png" />
+          <EmployeeCard />
         </button>
         <input className="search-input" value={userEmail} />
       </div>

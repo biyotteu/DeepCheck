@@ -99,9 +99,11 @@ export const userSelector = selector({
   get: ({ get }) => {
     const accessToken = get(tokenAtom)?.accessToken;
     if (accessToken) {
-      const { username }: { username: string } = jwt_decode(accessToken);
+      const { username, permission }: { username: string; permission: string } =
+        jwt_decode(accessToken);
       return {
         email: username,
+        permission,
       };
     } else {
       return null;

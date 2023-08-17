@@ -156,10 +156,19 @@ function Header() {
                       if (!emailCheck(user.email)) return;
                       if (login) {
                         try {
-                          const { data } = await http.post("/user/login/", {
-                            username: user.email,
-                            password: user.password,
-                          });
+                          const { data } = await http.post(
+                            "/user/login/",
+                            {
+                              username: user.email,
+                              password: user.password,
+                            },
+                            {
+                              headers: {
+                                "Content-Type":
+                                  "application/x-www-form-urlencoded",
+                              },
+                            }
+                          );
                           const { access_token, refresh_token } = data;
                           setToken({
                             accessToken: access_token,
@@ -246,9 +255,27 @@ function Header() {
           </div>
           <div className="user">
             {isAuth ? (
-              <a className="register" onClick={logout}>
-                로그아웃
-              </a>
+              <div className="logout-wrap">
+                {userInfo?.permission && (
+                  <div className="admin-wrap">
+                    <div className="admin-card">
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        관리자 메뉴
+                        <img src="/assets/icons/down-arrow.svg" />
+                      </div>
+                      <Link to="/usermanage" className="admin-menu">
+                        사용자 관리
+                      </Link>
+                      <Link to="/usermanage" className="admin-menu">
+                        리뷰 결과
+                      </Link>
+                    </div>
+                  </div>
+                )}
+                <a className="register" onClick={logout}>
+                  로그아웃
+                </a>
+              </div>
             ) : (
               <>
                 <a
