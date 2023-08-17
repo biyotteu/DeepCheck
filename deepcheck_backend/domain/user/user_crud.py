@@ -48,12 +48,27 @@ def deleteUser(db: Session, db_user: User):
     db.commit()
 
 
-def createSurvey(db: Session, survey_create: SurveyCreate, email: str):
-    survey_info = Survey(email=email, gender=survey_create.gender, age=survey_create.age, rate=survey_create.rate, satisfied=survey_create.satisfied, unsatisfied=survey_create.unsatisfied, unsatisfiedReason = survey_create.unsatisfiedReason)
-    print(survey_info)
+def createSurvey(db: Session, survey_create: SurveyCreate, username: str):
+    survey_info = Survey(username=username, 
+                         gender=survey_create.gender, 
+                         age=survey_create.age, 
+                         rate=survey_create.rate, 
+                         deepfake_detect=survey_create.deepfake_detect,
+                         deepfake_protect=survey_create.deepfake_protect,
+                         fakeaudio_detect=survey_create.fakeaudio_detect,
+                         service_sec_1=survey_create.service_sec_1,
+                         design_1=survey_create.design_1,
+                         service_function_1=survey_create.service_function_1,
+                         information_1=survey_create.information_1,
+                         service_sec_2=survey_create.service_sec_2,
+                         design_2=survey_create.design_2,
+                         service_function_2=survey_create.service_function_2,
+                         information_2=survey_create.information_2)                         
     db.add(survey_info)
     db.commit()
 
-def getSurveyInfo(db: Session, email: str):
-    return db.query(Survey).filter(Survey.email == email).first()
+
+
+def getSurveyInfo(db: Session, username: str):
+    return db.query(Survey).filter(Survey.username == username).first()
 

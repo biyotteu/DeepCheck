@@ -20,13 +20,26 @@ class Survey(Base):
     __tablename__ = "survey"
 
     userid = Column(Integer, primary_key=True, unique=True)
-    email = Column(String, nullable=False)
+    username = Column(String, nullable=False, unique=True)
+    
     gender = Column(String, nullable=False)
     age = Column(Integer, nullable=False)
     rate = Column(Integer, nullable=False)
-    satisfied = Column(String, nullable=False)
-    unsatisfied = Column(String, nullable=False)
-    unsatisfiedReason = Column(String, nullable=True)
+
+    deepfake_detect = Column(Integer, nullable=False, default=0)
+    deepfake_protect = Column(Integer, nullable=False, default=0)
+    fakeaudio_detect = Column(Integer, nullable=False, default=0)
+    
+    service_sec_1 = Column(Integer, nullable=False, default=0)
+    design_1 = Column(Integer, nullable=False, default=0)
+    service_function_1 = Column(Integer, nullable=False, default=0)
+    information_1 = Column(Integer, nullable=False, default=0)
+
+    service_sec_2 = Column(Integer, nullable=False, default=0)
+    design_2 = Column(Integer, nullable=False, default=0)
+    service_function_2 = Column(Integer, nullable=False, default=0)
+    information_2 = Column(Integer, nullable=False, default=0)
+
 
 
 class Log(Base):
