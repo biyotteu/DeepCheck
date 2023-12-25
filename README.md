@@ -96,11 +96,11 @@
   <tr>
     <td>이성진</td>
     <td>백엔드/보안</td>
-    <td><a href="https://github.com/aest3ra/">aest3ra</a></td>
+    <td><a href="https://github.com/maro5397/">maro5397</a></td>
   </tr>
   <tr>
     <td>박성훈</td>
     <td>백엔드/보안</td>
-    <td><a href="https://github.com/maro5397/">maro5397</a></td>
+    <td><a href="https://github.com/aest3ra/">aest3ra</a></td>
   </tr>
 </table>
